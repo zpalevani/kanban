@@ -1,3 +1,12 @@
+/* ==========================================================================
+   Task Card Styles - FINAL VERSION WITH STACKING FIX
+   ========================================================================== */
+
+/* 
+  MODIFICATION #1: 
+  Added 'z-index: 1' here to establish a default stacking order.
+  The 'position: relative' you already had is essential for this to work.
+*/
 .task-card {
   background-color: var(--bg-tertiary);
   border: 1px solid var(--border);
@@ -6,7 +15,7 @@
   transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
-  z-index: 1; /* MODIFIED: This line was added */
+  z-index: 1;
 }
 
 .task-card:hover {
@@ -133,20 +142,24 @@
   }
 }
 
-/* --- ADD THIS ENTIRE BLOCK TO THE END OF YOUR CSS FILE --- */
+/* ==========================================================================
+   MODIFICATION #2: THE DEFINITIVE FIX
+   ========================================================================== */
 
 /* 
-  This is the FIX. When a card has the menu open, we use the
-  .task-card--menu-open class to lift it above all other cards.
+  When a card has the menu open, we apply a higher z-index AND a transform.
+  The transform forces the browser to create a new, elevated stacking context
+  for this card, ensuring it renders above all sibling tasks.
 */
 .task-card--menu-open {
   z-index: 100;
+  transform: scale(1.02); /* This is the key to creating the new layer */
+  box-shadow: 0 8px 24px var(--shadow);
 }
 
 /* 
-  This styles the dropdown menu itself. It positions it relative
-  to the card and gives it the highest z-index to ensure it's
-  always on top.
+  This styles the dropdown menu itself. It's positioned within the 
+  now-elevated card. Its z-index just needs to be higher than the card's.
 */
 .task-menu {
   position: absolute;
