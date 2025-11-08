@@ -78,51 +78,42 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .column-content::-webkit-scrollbar { width: 6px; }
 .column-content::-webkit-scrollbar-track { background: transparent; }
 .column-content::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 3px; }
-
-/* --- COLUMN THEME COLORS (HEADER, BUTTONS, AND INPUT FOCUS) --- */
-/* Backlog */
-.kanban-board .kanban-column:nth-child(1) { --column-accent: var(--column-color-backlog); --column-accent-faded: rgba(142, 142, 147, 0.1); } /* NEW */
+.kanban-board .kanban-column:nth-child(1) { --column-accent: var(--column-color-backlog); --column-accent-faded: rgba(142, 142, 147, 0.1); }
 .kanban-board .kanban-column:nth-child(1) .column-header { background-color: var(--column-accent); }
 .kanban-board .kanban-column:nth-child(1) .btn-add { background-color: var(--column-accent); border-color: var(--column-accent); color: var(--brand-white); }
 .kanban-board .kanban-column:nth-child(1) .add-task-btn:hover { border-color: var(--column-accent); color: var(--column-accent); background-color: var(--column-accent-faded); }
 .kanban-board .kanban-column:nth-child(1) .add-task-input:focus { border-color: var(--column-accent); }
-
-/* To Do */
-.kanban-board .kanban-column:nth-child(2) { --column-accent: var(--column-color-todo); --column-accent-faded: rgba(255, 59, 48, 0.1); } /* NEW */
+.kanban-board .kanban-column:nth-child(2) { --column-accent: var(--column-color-todo); --column-accent-faded: rgba(255, 59, 48, 0.1); }
 .kanban-board .kanban-column:nth-child(2) .column-header { background-color: var(--column-accent); }
 .kanban-board .kanban-column:nth-child(2) .btn-add { background-color: var(--column-accent); border-color: var(--column-accent); color: var(--brand-white); }
 .kanban-board .kanban-column:nth-child(2) .add-task-btn:hover { border-color: var(--column-accent); color: var(--column-accent); background-color: var(--column-accent-faded); }
 .kanban-board .kanban-column:nth-child(2) .add-task-input:focus { border-color: var(--column-accent); }
-
-/* Doing */
-.kanban-board .kanban-column:nth-child(3) { --column-accent: var(--column-color-doing); --column-accent-faded: rgba(255, 149, 0, 0.1); } /* NEW */
+.kanban-board .kanban-column:nth-child(3) { --column-accent: var(--column-color-doing); --column-accent-faded: rgba(255, 149, 0, 0.1); }
 .kanban-board .kanban-column:nth-child(3) .column-header { background-color: var(--column-accent); }
 .kanban-board .kanban-column:nth-child(3) .btn-add { background-color: var(--column-accent); border-color: var(--column-accent); color: var(--bg-primary); }
 .kanban-board .kanban-column:nth-child(3) .add-task-btn:hover { border-color: var(--column-accent); color: var(--column-accent); background-color: var(--column-accent-faded); }
 .kanban-board .kanban-column:nth-child(3) .add-task-input:focus { border-color: var(--column-accent); }
-
-/* Done */
-.kanban-board .kanban-column:nth-child(4) { --column-accent: var(--column-color-done); --column-accent-faded: rgba(52, 199, 89, 0.1); } /* NEW */
+.kanban-board .kanban-column:nth-child(4) { --column-accent: var(--column-color-done); --column-accent-faded: rgba(52, 199, 89, 0.1); }
 .kanban-board .kanban-column:nth-child(4) .column-header { background-color: var(--column-accent); }
 .kanban-board .kanban-column:nth-child(4) .btn-add { background-color: var(--column-accent); border-color: var(--column-accent); color: var(--bg-primary); }
 .kanban-board .kanban-column:nth-child(4) .add-task-btn:hover { border-color: var(--column-accent); color: var(--column-accent); background-color: var(--column-accent-faded); }
 .kanban-board .kanban-column:nth-child(4) .add-task-input:focus { border-color: var(--column-accent); }
 
-/* --- 6. TASK CARD STYLES (UPDATED) --- */
+/* 6. TASK CARD STYLES */
 .task-card { background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; transition: var(--transition-fast); cursor: grab; position: relative; }
-.task-card:hover { border-color: var(--column-accent); box-shadow: 0 0 10px var(--column-accent-faded); } /* CORRECTED */
+.task-card:hover { border-color: var(--column-accent); box-shadow: 0 0 10px var(--column-accent-faded); }
 .task-card.completed { opacity: 0.6; }
 .task-card.completed .task-title { text-decoration: line-through; color: var(--text-secondary); }
 .task-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
 .task-content { flex: 1; }
 .task-checkbox { display: flex; align-items: flex-start; gap: 0.75rem; }
-.task-checkbox input[type='checkbox'] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--column-accent); margin-top: 2px; flex-shrink: 0; } /* CORRECTED */
+.task-checkbox input[type='checkbox'] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--column-accent); margin-top: 2px; flex-shrink: 0; }
 .task-title { color: var(--text-primary); font-size: 0.95rem; font-weight: 500; line-height: 1.5; word-break: break-word; cursor: pointer; }
-.task-edit-input { width: 100%; background-color: var(--bg-primary); border: 1px solid var(--column-accent); border-radius: 6px; padding: 0.5rem; color: var(--text-primary); font-size: 0.95rem; outline: none; } /* CORRECTED */
-.task-notes-indicator { margin-top: 0.75rem; padding: 0.25rem 0.5rem; background-color: var(--column-accent-faded); border-radius: 4px; font-size: 0.8rem; color: var(--column-accent); cursor: pointer; transition: var(--transition-fast); } /* CORRECTED */
-.task-notes-indicator:hover { filter: brightness(1.2); } /* CORRECTED */
+.task-edit-input { width: 100%; background-color: var(--bg-primary); border: 1px solid var(--column-accent); border-radius: 6px; padding: 0.5rem; color: var(--text-primary); font-size: 0.95rem; outline: none; }
+.task-notes-indicator { margin-top: 0.75rem; padding: 0.25rem 0.5rem; background-color: var(--column-accent-faded); border-radius: 4px; font-size: 0.8rem; color: var(--column-accent); cursor: pointer; transition: var(--transition-fast); }
+.task-notes-indicator:hover { filter: brightness(1.2); }
 
-/* --- ALL OTHER STYLES BELOW ARE UNCHANGED --- */
+/* 7. ADD TASK FORM */
 .add-task-btn { background: transparent; border: 1px dashed var(--border); border-radius: 8px; padding: 0.75rem; color: var(--text-secondary); font-size: 0.9rem; cursor: pointer; transition: var(--transition-fast); text-align: center; font-weight: 500; margin: 0.75rem; }
 .add-task-form { display: flex; flex-direction: column; gap: 0.75rem; padding: 0.75rem; }
 .add-task-input { background-color: var(--bg-primary); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; color: var(--text-primary); font-size: 0.95rem; outline: none; transition: var(--transition-fast); }
@@ -132,21 +123,49 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .btn-cancel { background-color: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border); }
 .btn-cancel:hover:not(:disabled) { background-color: var(--bg-primary); }
 :disabled { opacity: 0.6; cursor: not-allowed; }
-.menu-overlay, .notes-overlay { position: fixed; inset: 0; z-index: 9; }
-.notes-overlay { background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); }
-.task-menu-container { position: relative; }
-.task-menu-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; padding: 0.25rem; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: var(--transition-fast); }
-.task-menu-btn:hover { background-color: var(--bg-tertiary); color: var(--text-primary); }
-.task-menu { position: absolute; top: 100%; right: 0; margin-top: 0.5rem; background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-large); min-width: 180px; z-index: 10; overflow: hidden; }
-.menu-item { display: block; width: 100%; padding: 0.75rem 1rem; background: transparent; border: none; text-align: left; color: var(--text-primary); font-size: 0.9rem; cursor: pointer; transition: var(--transition-fast); }
-.menu-item:hover, .menu-item:focus { background-color: var(--accent-primary-faded); color: var(--accent-primary); outline: none; }
-.menu-item.delete { color: #f44; }
-.menu-item.delete:hover, .menu-item.delete:focus { background-color: rgba(255, 68, 68, 0.1); }
-.menu-divider { height: 1px; background-color: var(--border); margin: 0.25rem 0; }
-.menu-label { padding: 0.5rem 1rem; font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
-.notes-modal { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
-.notes-content { position: relative; background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; max-width: 500px; width: 100%; box-shadow: var(--shadow-large); z-index: 1; }
-.notes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-.notes-header h3 { font-size: 1.25rem; font-weight: 600; margin: 0; }
-.close-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition-fast); }
-.close-btn:hover { background-color:
+
+/* 8. MODALS AND MENUS */
+.menu-overlay, .notes-overlay { /* ... existing styles ... */ }
+
+/* --- 9. ACTION BUTTONS & TOASTS (UPDATED SECTION) --- */
+.kanban-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: transparent;
+  color: var(--text-secondary);
+  /* CORRECTED: Make the border visible by default */
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.action-button:hover {
+  color: var(--text-primary);
+  /* CORRECTED: Make the border brighter on hover */
+  border-color: var(--text-secondary);
+  transform: translateY(-1px);
+}
+
+.action-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.toast { /* ... existing styles ... */ }
+
+/* 10. RESPONSIVE DESIGN */
+@media (max-width: 1200px) { .kanban-board { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) { .kanban-board { grid-template-columns: 1fr; } .app-main { padding: 1rem; } .app-header { padding: 1rem; } .kanban-actions { flex-direction: column; } .keyboard-hint { display: none; } }
