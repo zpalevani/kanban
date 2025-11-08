@@ -64,10 +64,8 @@ function KanbanBoard() {
       
       const [movedTask] = activeTasks.splice(activeIndex, 1);
       
-      // Determine the correct overIndex
       let overIndex = overTasks.findIndex(t => t.id === over.id);
       if (overIndex === -1) {
-         // If dropping on a column, not a task, add to the end
          overIndex = overTasks.length;
       }
 
@@ -109,7 +107,7 @@ function KanbanBoard() {
   };
   
   const onAddTask = (columnId, title, deadline) => {
-    const newTask = { id: nanoid(), title, deadline, completed: false, notes: '' };
+    const newTask = { id: nanoid(), title, deadline: deadline || null, completed: false, notes: '' };
     setColumns(prev => ({
       ...prev,
       [columnId]: {
@@ -144,10 +142,12 @@ function KanbanBoard() {
   };
   
   const onToggleComplete = (taskId) => {
-      onUpdateTask(taskId, { completed: !findColumnOfTask(taskId)?.tasks.find(t=>t.id === taskId)?.completed });
+    const task = findColumnOfTask(taskId)?.tasks.find(t => t.id === taskId);
+    if (task) {
+      onUpdateTask(taskId, { completed: !task.completed });
+    }
   };
   
-  // onMoveTask is now handled by drag-and-drop, but we keep it for the menu
   const onMoveTask = (taskId, newColumnId) => {
     const activeColumn = findColumnOfTask(taskId);
     if (activeColumn && activeColumn.id !== newColumnId) {
@@ -202,24 +202,4 @@ function KanbanBoard() {
   );
 }
 
-export default KanbanBoard;```
-
-### 4. Update `App.css`
-
-Finally, add these classes to the end of your `App.css` file to provide visual feedback while dragging.
-
-**File: `src/App.css` (Add these styles)**
-```css
-/* 13. DRAG AND DROP STYLES */
-
-/* Styles the placeholder element that is left behind */
-.is-dragging-container {
-  opacity: 0.3;
-}
-
-/* This styles the card that you see attached to your cursor */
-.drag-overlay .task-card {
-  cursor: grabbing;
-  box-shadow: var(--shadow-large);
-  transform: rotate(3deg) scale(1.05);
-}
+export default KanbanBoard;
