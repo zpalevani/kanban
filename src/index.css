@@ -19,6 +19,12 @@
   --gray-900: #1a1a1a;
   --gray-950: #101010;
 
+  /* --- NEW: COLUMN STATUS COLORS --- */
+  --column-color-backlog: #8E8E93; /* Neutral Grey */
+  --column-color-todo: #FF3B30;    /* Cherry Red */
+  --column-color-doing: #FF9500;   /* Active Orange */
+  --column-color-done: #34C759;     /* Success Green */
+
   /* Shadows */
   --shadow-color: rgba(0, 0, 0, 0.5);
   --shadow-medium: 0 4px 12px var(--shadow-color);
@@ -153,7 +159,18 @@ body {
   display: flex;
   flex-direction: column;
   max-height: calc(100vh - 150px);
+  /* UPDATE: Add a thick top border to be colored per-column */
+  border: 1px solid var(--border);
+  border-top: 4px solid;
 }
+
+/* --- NEW: COLUMN-SPECIFIC BORDERS --- */
+/* This targets each column by its position on the board */
+.kanban-board .kanban-column:nth-child(1) { border-top-color: var(--column-color-backlog); }
+.kanban-board .kanban-column:nth-child(2) { border-top-color: var(--column-color-todo); }
+.kanban-board .kanban-column:nth-child(3) { border-top-color: var(--column-color-doing); }
+.kanban-board .kanban-column:nth-child(4) { border-top-color: var(--column-color-done); }
+
 
 .column-header {
   display: flex;
