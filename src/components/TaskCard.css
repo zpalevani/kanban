@@ -1,175 +1,98 @@
-/* ==========================================================================
-   Task Card Styles - FINAL VERSION WITH STACKING FIX
-   ========================================================================== */
-
-/* 
-  MODIFICATION #1: 
-  Added 'z-index: 1' here to establish a default stacking order.
-  The 'position: relative' you already had is essential for this to work.
+/*
+  The z-index rules have been removed as they are no longer needed.
+  The portal handles the stacking context now.
 */
 .task-card {
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border);
+  background-color: var(--bg-tertiary, #2d3748);
+  border: 1px solid var(--border, #4a5568);
   border-radius: 8px;
   padding: 1rem;
-  transition: all 0.3s ease;
-  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease;
   position: relative;
-  z-index: 1;
 }
 
 .task-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow);
-  border-color: var(--accent);
+  box-shadow: 0 4px 12px var(--shadow, rgba(0, 0, 0, 0.4));
 }
 
 .task-card.completed {
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .task-card.completed .task-title {
   text-decoration: line-through;
-  color: var(--text-secondary);
+  color: var(--text-secondary, #a0aec0);
 }
 
 .task-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.75rem;
 }
 
 .task-content {
   flex: 1;
   display: flex;
-  align-items: flex-start;
-}
-
-.task-checkbox {
-  display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.75rem;
-  cursor: pointer;
-  width: 100%;
 }
 
-.task-checkbox input[type="checkbox"] {
+.task-checkbox-input {
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: var(--accent);
-  margin-top: 2px;
+  accent-color: var(--accent, #38a169);
   flex-shrink: 0;
 }
 
 .task-title {
-  flex: 1;
-  color: var(--text-primary);
-  font-size: 0.95rem;
+  color: var(--text-primary, #e2e8f0);
+  font-size: 1rem;
   font-weight: 500;
-  line-height: 1.5;
-  word-wrap: break-word;
-  cursor: text;
+  line-height: 1.4;
+  cursor: pointer;
 }
 
 .task-edit-input {
   width: 100%;
-  background-color: var(--bg-secondary);
-  border: 2px solid var(--accent);
+  background-color: var(--bg-secondary, #1a202c);
+  border: 1px solid var(--accent, #38a169);
   border-radius: 6px;
   padding: 0.5rem;
-  color: var(--text-primary);
-  font-size: 0.95rem;
+  color: var(--text-primary, #e2e8f0);
+  font-size: 1rem;
   outline: none;
-}
-
-.task-menu-container {
-  position: relative;
-  flex-shrink: 0;
 }
 
 .task-menu-btn {
   background: transparent;
   border: none;
-  color: var(--text-secondary);
-  font-size: 1.25rem;
+  color: var(--text-secondary, #a0aec0);
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem;
   border-radius: 4px;
-  transition: all 0.2s ease;
-  line-height: 1;
-  transform: rotate(90deg);
+  transition: background-color 150ms ease, color 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .task-menu-btn:hover,
 .task-menu-btn:focus {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  background-color: var(--bg-primary, #4a5568);
+  color: var(--text-primary, #e2e8f0);
   outline: none;
 }
 
-.task-notes-indicator {
-  margin-top: 0.75rem;
-  padding: 0.5rem;
-  background-color: rgba(26, 77, 58, 0.1);
-  border-radius: 4px;
-  font-size: 0.85rem;
-  color: var(--accent);
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.task-notes-indicator:hover,
-.task-notes-indicator:focus {
-  background-color: rgba(26, 77, 58, 0.2);
-  outline: none;
-}
-
-.task-title {
-  cursor: pointer;
-}
-
-.task-title:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-@media (max-width: 768px) {
-  .task-menu-container {
-    position: static;
-  }
-}
-
-/* ==========================================================================
-   MODIFICATION #2: THE DEFINITIVE FIX
-   ========================================================================== */
-
-/* 
-  When a card has the menu open, we apply a higher z-index AND a transform.
-  The transform forces the browser to create a new, elevated stacking context
-  for this card, ensuring it renders above all sibling tasks.
+/*
+  THIS IS THE FIX:
+  The three-dots icon is made of <circle> elements, which require a `fill`
+  property, not a `stroke` property, to be visible.
 */
-.task-card--menu-open {
-  z-index: 100;
-  transform: scale(1.02); /* This is the key to creating the new layer */
-  box-shadow: 0 8px 24px var(--shadow);
-}
-
-/* 
-  This styles the dropdown menu itself. It's positioned within the 
-  now-elevated card. Its z-index just needs to be higher than the card's.
-*/
-.task-menu {
-  position: absolute;
-  top: 50px;
-  right: 15px;
-  z-index: 110;
-  width: 220px;
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: 0 8px 24px var(--shadow);
-  padding: 0.5rem;
+.task-menu-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor; /* Changed from "stroke" to "fill" */
 }
