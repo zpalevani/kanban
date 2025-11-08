@@ -146,30 +146,28 @@ body {
   margin-top: 1rem;
 }
 
-/* UPDATED: Modern "Ghost Button" Style */
 .action-button {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem; /* Smaller padding */
-  background-color: transparent; /* Transparent background */
-  color: var(--text-secondary); /* Less prominent text color */
+  padding: 0.5rem 1rem; 
+  background-color: transparent; 
+  color: var(--text-secondary); 
   border: 1px solid var(--border);
   border-radius: 8px;
-  font-size: 0.85rem; /* Slightly smaller font */
+  font-size: 0.85rem; 
   font-weight: 500;
   cursor: pointer;
   transition: var(--transition-fast);
 }
 
-/* UPDATED: Hover state fills with color */
+/* CORRECTED: Subtle "pop" hover effect */
 .action-button:hover {
-  background-color: var(--accent-primary-faded);
-  color: var(--accent-primary);
-  border-color: var(--accent-primary);
+  color: var(--text-primary); /* Make text brighter */
+  border-color: var(--text-secondary); /* Make border brighter */
+  transform: translateY(-1px); /* Add a slight lift effect */
 }
 
-/* NEW: Style for SVG icons inside the buttons */
 .action-button svg {
   width: 14px;
   height: 14px;
@@ -180,5 +178,3 @@ body {
 /* 10. RESPONSIVE DESIGN (Styles unchanged) */
 @media (max-width: 1200px) { .kanban-board { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 768px) { .kanban-board { grid-template-columns: 1fr; } .app-main { padding: 1rem; } .app-header { padding: 1rem; } .kanban-actions { flex-direction: column; } .keyboard-hint { display: none; } }
-
-/* (Keep all other existing styles for modals, toasts, etc. below) */
