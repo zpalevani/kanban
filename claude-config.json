@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "google-analytics": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\zpale\\google-analytics-mcp\\src\\index.js"
+      ],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "C:\\Users\\zpale\\google-analytics-mcp\\credentials.json",
+        "GA_PROPERTY_ID": "262253356"
+      }
+    }
+  }
+}
+
+
