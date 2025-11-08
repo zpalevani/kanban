@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 import './TaskMenu.css'
 
 function TaskMenu({ showMenu, onClose, onEdit, onShowNotes, onMove, onDelete, availableColumns }) {
@@ -98,5 +99,18 @@ function TaskMenu({ showMenu, onClose, onEdit, onShowNotes, onMove, onDelete, av
   )
 }
 
-export default TaskMenu
+TaskMenu.propTypes = {
+  showMenu: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onShowNotes: PropTypes.func.isRequired,
+  onMove: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  availableColumns: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired
+  })).isRequired
+}
+
+export default React.memo(TaskMenu)
 

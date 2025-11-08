@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import TaskCard from './TaskCard'
+import { columnPropTypes } from './Column.propTypes'
 import './Column.css'
 
 function Column({ column, tasks, onAddTask, onUpdateTask, onDeleteTask, onMoveTask, onToggleComplete, availableColumns }) {
@@ -102,4 +104,6 @@ function Column({ column, tasks, onAddTask, onUpdateTask, onDeleteTask, onMoveTa
   )
 }
 
-export default Column
+Column.propTypes = columnPropTypes
+
+export default React.memo(Column)

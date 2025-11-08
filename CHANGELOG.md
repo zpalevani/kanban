@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.1.0] - 2025-01-XX
+
+### Added
+- ✅ Error Boundary component for graceful error handling
+- ✅ Toast notification system for user feedback
+- ✅ Keyboard shortcuts (Ctrl+T to toggle theme)
+- ✅ Data export/import functionality (JSON format)
+- ✅ PropTypes validation for all components
+- ✅ Comprehensive test suite with Vitest
+- ✅ Test coverage for utilities and hooks
+- ✅ Keyboard shortcut hints in header
+
+### Improved
+- ✅ All components now use React.memo for performance
+- ✅ Better error messages with visual feedback
+- ✅ Enhanced accessibility with ARIA labels
+- ✅ Improved user experience with toast notifications
+- ✅ Better code organization and separation of concerns
+
+### Fixed
+- ✅ Removed all leftover Google Analytics files
+- ✅ Fixed component memoization issues
+- ✅ Improved error handling throughout the app
+
 ## [1.0.1] - 2025-01-XX
 
 ### Fixed

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import TaskMenu from './TaskMenu'
 import TaskNotes from './TaskNotes'
 import './TaskCard.css'
@@ -137,4 +138,32 @@ function TaskCard({ task, onUpdate, onDelete, onMove, onToggleComplete, availabl
   )
 }
 
-export default TaskCard
+TaskCard.propTypes = {
+  task: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    completed: PropTypes.bool.isRequired,
+    notes: PropTypes.string,
+    columnId: PropTypes.string.isRequired,
+    createdAt: PropTypes.string.isRequired
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onMove: PropTypes.func.isRequired,
+  onToggleComplete: PropTypes.func.isRequired,
+  availableColumns: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired
+  })).isRequired
+}
+
+export default React.memo(TaskCard, (prevProps, nextProps) => {
+  return (
+    prevProps.task.id === nextProps.task.id &&
+    prevProps.task.title === nextProps.task.title &&
+    prevProps.task.completed === nextProps.task.completed &&
+    prevProps.task.notes === nextProps.task.notes &&
+    prevProps.task.columnId === nextProps.task.columnId &&
+    prevProps.availableColumns.length === nextProps.availableColumns.length
+  )
+})

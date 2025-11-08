@@ -32,6 +32,20 @@
   opacity: 0.8;
 }
 
+.keyboard-hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-left: 1rem;
+  opacity: 0.6;
+  font-family: monospace;
+}
+
+@media (max-width: 768px) {
+  .keyboard-hint {
+    display: none;
+  }
+}
+
 .theme-toggle {
   background: var(--accent);
   border: none;

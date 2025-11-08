@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 import './TaskNotes.css'
 
 function TaskNotes({ task, onUpdate, onClose }) {
@@ -65,5 +66,14 @@ function TaskNotes({ task, onUpdate, onClose }) {
   )
 }
 
-export default TaskNotes
+TaskNotes.propTypes = {
+  task: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    notes: PropTypes.string
+  }).isRequired,
+  onUpdate: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired
+}
+
+export default React.memo(TaskNotes)
 
