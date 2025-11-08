@@ -28,8 +28,8 @@ function App() {
       <header className="app-header">
         <div className="header-left">
           <span className="made-by">Made by Zara Palevani</span>
-          <span className="keyboard-hint" title="Press Ctrl+T to toggle theme">
-            ⌨️ Ctrl+T
+          <span className="" title="Connect on X">
+            ⌨️ @zpalevani
           </span>
         </div>
 
