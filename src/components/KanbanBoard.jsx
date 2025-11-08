@@ -1,112 +1,225 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useState } from 'react';
+import {
+  DndContext,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragOverlay
+} from '@dnd-kit/core';
+import { sortableKeyboardCoordinates, arrayMove } from '@dnd-kit/sortable';
+import { nanoid } from 'nanoid';
+import { useLocalStorage } from '../hooks/useLocalStorage'; // Assuming path
+import { STORAGE_KEYS } from '../utils/constants'; // Assuming path
+
 import Column from './Column';
-import Toast from './Toast';
-import { useTasks } from '../hooks/useTasks';
-import { COLUMNS } from '../utils/constants';
+import TaskCard from './TaskCard';
+
+const initialColumns = {
+  backlog: { id: 'backlog', title: 'Backlog', tasks: [] },
+  todo: { id: 'todo', title: 'To Do', tasks: [] },
+  doing: { id: 'doing', title: 'Doing', tasks: [] },
+  done: { id: 'done', title: 'Done', tasks: [] },
+};
 
 function KanbanBoard() {
-  const {
-    tasks,
-    setTasks,
-    tasksByColumn,
-    toastMessage,
-    setToastMessage,
-    showToast,
-    addTask,
-    updateTask,
-    deleteTask,
-    moveTask,
-    toggleComplete
-  } = useTasks();
+  const [columns, setColumns] = useLocalStorage(STORAGE_KEYS.KANBAN_COLUMNS, initialColumns);
+  const [activeTask, setActiveTask] = useState(null);
 
-  const importInputRef = useRef(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
-  const handleExport = useCallback(() => {
-    try {
-      const dataStr = JSON.stringify(tasks, null, 2);
-      const dataBlob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `kanban-backup-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      showToast('Tasks exported successfully', 'success');
-    } catch (error) {
-      showToast('Failed to export tasks', 'error');
-      console.error('Export error:', error);
+  const findColumnOfTask = (taskId) => {
+    return Object.values(columns).find(column => column.tasks.some(task => task.id === taskId));
+  };
+  
+  const handleDragStart = (event) => {
+    const { active } = event;
+    const column = findColumnOfTask(active.id);
+    if (column) {
+      const task = column.tasks.find(t => t.id === active.id);
+      setActiveTask(task);
     }
-  }, [tasks, showToast]);
+  };
 
-  const handleImport = useCallback((event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+  const handleDragOver = (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const imported = JSON.parse(e.target.result);
-        if (Array.isArray(imported) && imported.every(task => task.id && task.title && task.columnId)) {
-          setTasks(imported);
-          showToast('Tasks imported successfully', 'success');
-        } else {
-          showToast('Invalid file format', 'error');
-        }
-      } catch (error) {
-        showToast('Failed to import tasks', 'error');
-        console.error('Import error:', error);
+    const activeColumn = findColumnOfTask(active.id);
+    const overColumn = columns[over.id] || findColumnOfTask(over.id);
+
+    if (!activeColumn || !overColumn || activeColumn.id === overColumn.id) return;
+
+    setColumns(prev => {
+      const newColumns = { ...prev };
+      const activeTasks = [...newColumns[activeColumn.id].tasks];
+      const overTasks = [...newColumns[overColumn.id].tasks];
+      const activeIndex = activeTasks.findIndex(t => t.id === active.id);
+      
+      const [movedTask] = activeTasks.splice(activeIndex, 1);
+      
+      // Determine the correct overIndex
+      let overIndex = overTasks.findIndex(t => t.id === over.id);
+      if (overIndex === -1) {
+         // If dropping on a column, not a task, add to the end
+         overIndex = overTasks.length;
       }
-    };
-    reader.onerror = () => showToast('Failed to read file', 'error');
-    reader.readAsText(file);
-    event.target.value = '';
-  }, [setTasks, showToast]);
+
+      overTasks.splice(overIndex, 0, movedTask);
+
+      newColumns[activeColumn.id].tasks = activeTasks;
+      newColumns[overColumn.id].tasks = overTasks;
+
+      return newColumns;
+    });
+  };
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    if (!over) {
+      setActiveTask(null);
+      return;
+    }
+    
+    const activeColumn = findColumnOfTask(active.id);
+    const overColumn = findColumnOfTask(over.id) || columns[over.id];
+
+    if (activeColumn && overColumn && activeColumn.id === overColumn.id) {
+      const activeIndex = activeColumn.tasks.findIndex(t => t.id === active.id);
+      const overIndex = overColumn.tasks.findIndex(t => t.id === over.id);
+
+      if (activeIndex !== overIndex) {
+        setColumns(prev => ({
+          ...prev,
+          [overColumn.id]: {
+            ...prev[overColumn.id],
+            tasks: arrayMove(prev[overColumn.id].tasks, activeIndex, overIndex)
+          }
+        }));
+      }
+    }
+    
+    setActiveTask(null);
+  };
+  
+  const onAddTask = (columnId, title, deadline) => {
+    const newTask = { id: nanoid(), title, deadline, completed: false, notes: '' };
+    setColumns(prev => ({
+      ...prev,
+      [columnId]: {
+        ...prev[columnId],
+        tasks: [...prev[columnId].tasks, newTask]
+      }
+    }));
+  };
+  
+  const onUpdateTask = (taskId, newValues) => {
+    setColumns(prev => {
+      const newColumns = { ...prev };
+      for (const columnId in newColumns) {
+        const taskIndex = newColumns[columnId].tasks.findIndex(t => t.id === taskId);
+        if (taskIndex !== -1) {
+          newColumns[columnId].tasks[taskIndex] = { ...newColumns[columnId].tasks[taskIndex], ...newValues };
+          break;
+        }
+      }
+      return newColumns;
+    });
+  };
+
+  const onDeleteTask = (taskId) => {
+     setColumns(prev => {
+      const newColumns = { ...prev };
+       for (const columnId in newColumns) {
+         newColumns[columnId].tasks = newColumns[columnId].tasks.filter(t => t.id !== taskId);
+       }
+       return newColumns;
+     });
+  };
+  
+  const onToggleComplete = (taskId) => {
+      onUpdateTask(taskId, { completed: !findColumnOfTask(taskId)?.tasks.find(t=>t.id === taskId)?.completed });
+  };
+  
+  // onMoveTask is now handled by drag-and-drop, but we keep it for the menu
+  const onMoveTask = (taskId, newColumnId) => {
+    const activeColumn = findColumnOfTask(taskId);
+    if (activeColumn && activeColumn.id !== newColumnId) {
+      const taskIndex = activeColumn.tasks.findIndex(t => t.id === taskId);
+      const [taskToMove] = activeColumn.tasks.splice(taskIndex, 1);
+      
+      setColumns(prev => {
+        const newCols = {...prev};
+        newCols[activeColumn.id].tasks = [...activeColumn.tasks];
+        newCols[newColumnId].tasks.push(taskToMove);
+        return newCols;
+      });
+    }
+  };
 
   return (
-    <>
-      {toastMessage && (
-        <Toast
-          message={toastMessage.message}
-          type={toastMessage.type}
-          onClose={() => setToastMessage(null)}
-        />
-      )}
-      <div className="kanban-board" role="main">
-        {COLUMNS.map(column => (
+    <div className="kanban-board">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+      >
+        {Object.values(columns).map(column => (
           <Column
             key={column.id}
             column={column}
-            tasks={tasksByColumn[column.id] || []}
-            onAddTask={addTask}
-            onUpdateTask={updateTask}
-            onDeleteTask={deleteTask}
-            onMoveTask={moveTask}
-            onToggleComplete={toggleComplete}
-            availableColumns={COLUMNS.filter(c => c.id !== column.id)}
+            tasks={column.tasks}
+            onAddTask={onAddTask}
+            onUpdateTask={onUpdateTask}
+            onDeleteTask={onDeleteTask}
+            onMoveTask={onMoveTask}
+            onToggleComplete={onToggleComplete}
+            availableColumns={Object.values(columns).filter(c => c.id !== column.id).map(c => ({ id: c.id, title: c.title }))}
           />
         ))}
-        <div className="kanban-actions">
-          <button className="action-button" onClick={handleExport}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 17V3" /><path d="m6 11 6 6 6-6" /><path d="M19 21H5" /></svg>
-            Export
-          </button>
-          <button className="action-button" onClick={() => importInputRef.current.click()}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v14" /><path d="m18 9-6-6-6 6" /><path d="M5 21h14" /></svg>
-            Import
-          </button>
-        </div>
-        <input
-          type="file"
-          ref={importInputRef}
-          style={{ display: 'none' }}
-          accept=".json"
-          onChange={handleImport}
-        />
-      </div>
-    </>
+        <DragOverlay>
+          {activeTask ? (
+            <TaskCard 
+              task={activeTask} 
+              onUpdateTask={() => {}}
+              onDeleteTask={() => {}}
+              onMoveTask={() => {}}
+              onToggleComplete={() => {}}
+              availableColumns={[]}
+            />
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    </div>
   );
 }
 
-export default React.memo(KanbanBoard);
+export default KanbanBoard;```
+
+### 4. Update `App.css`
+
+Finally, add these classes to the end of your `App.css` file to provide visual feedback while dragging.
+
+**File: `src/App.css` (Add these styles)**
+```css
+/* 13. DRAG AND DROP STYLES */
+
+/* Styles the placeholder element that is left behind */
+.is-dragging-container {
+  opacity: 0.3;
+}
+
+/* This styles the card that you see attached to your cursor */
+.drag-overlay .task-card {
+  cursor: grabbing;
+  box-shadow: var(--shadow-large);
+  transform: rotate(3deg) scale(1.05);
+}

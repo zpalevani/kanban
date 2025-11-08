@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { TaskMenu } from './TaskMenu';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { TaskMenu } from './TaskMenu'; // Ensure this path is correct
 import './TaskCard.css';
 
 function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComplete, availableColumns }) {
@@ -11,6 +13,22 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
   const [noteInput, setNoteInput] = useState(task.notes || '');
 
   const menuButtonRef = useRef(null);
+
+  // --- DND-KIT INTEGRATION ---
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: task.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+  // --- END DND-KIT INTEGRATION ---
 
   const handleTitleBlur = () => {
     if (title.trim() && title.trim() !== task.title) {
@@ -31,10 +49,11 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
     onUpdateTask(task.id, { notes: noteInput });
     setIsNotesModalOpen(false);
   };
-
+  
+  // We wrap the entire component in a div to apply the dnd-kit props
   return (
-    <>
-      <div className={`task-card ${task.completed ? 'completed' : ''}`}>
+    <div ref={setNodeRef} style={style} {...attributes} className={isDragging ? 'is-dragging-container' : ''}>
+      <div className={`task-card ${task.completed ? 'completed' : ''}`} {...listeners}>
         <div className="task-header">
           <div className="task-content">
             <input
@@ -111,7 +130,7 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

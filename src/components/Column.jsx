@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import PropTypes from 'prop-types';
+import { SortableContext, useSortable } from '@dnd-kit/sortable';
 
 const taskSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must be 100 characters or less'),
@@ -22,6 +23,10 @@ function Column({ column, tasks, onAddTask, onUpdateTask, onDeleteTask, onMoveTa
   });
 
   const [showAddForm, setShowAddForm] = useState(false);
+  
+  // --- DND-KIT INTEGRATION ---
+  const { setNodeRef } = useSortable({ id: column.id });
+  // --- END DND-KIT INTEGRATION ---
 
   const onSubmit = (data) => {
     onAddTask(column.id, data.title, data.deadline);
@@ -35,23 +40,26 @@ function Column({ column, tasks, onAddTask, onUpdateTask, onDeleteTask, onMoveTa
   };
 
   return (
-    <div className="kanban-column">
+    <div ref={setNodeRef} className="kanban-column">
       <header className="column-header">
         <h2 className="column-title">{column.title}</h2>
         <span className="task-count">{tasks.length}</span>
       </header>
       <div className="column-content">
-        {tasks.map(task => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onUpdateTask={onUpdateTask}
-            onDeleteTask={onDeleteTask}
-            onMoveTask={onMoveTask}
-            onToggleComplete={onToggleComplete}
-            availableColumns={availableColumns}
-          />
-        ))}
+        {/* --- DND-KIT: WRAP TASKS IN SORTABLECONTEXT --- */}
+        <SortableContext items={tasks.map(task => task.id)}>
+          {tasks.map(task => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onUpdateTask={onUpdateTask}
+              onDeleteTask={onDeleteTask}
+              onMoveTask={onMoveTask}
+              onToggleComplete={onToggleComplete}
+              availableColumns={availableColumns}
+            />
+          ))}
+        </SortableContext>
       </div>
       {showAddForm ? (
         <form className="add-task-form" onSubmit={handleSubmit(onSubmit)}>
@@ -84,6 +92,15 @@ function Column({ column, tasks, onAddTask, onUpdateTask, onDeleteTask, onMoveTa
   );
 }
 
-// PropTypes here...
+Column.propTypes = {
+  column: PropTypes.object.isRequired,
+  tasks: PropTypes.array.isRequired,
+  onAddTask: PropTypes.func.isRequired,
+  onUpdateTask: PropTypes.func.isRequired,
+  onDeleteTask: PropTypes.func.isRequired,
+  onMoveTask: PropTypes.func.isRequired,
+  onToggleComplete: PropTypes.func.isRequired,
+  availableColumns: PropTypes.array.isRequired,
+};
 
 export default React.memo(Column);
