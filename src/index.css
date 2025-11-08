@@ -5,7 +5,7 @@
 
 /* 1. CSS VARIABLES FOR THEMES */
 :root {
-  /* Electric Lime Accent */
+  /* Electric Lime Accent (for global elements like theme toggle, focus rings) */
   --accent-primary: #39ff14;
   --accent-primary-hover: #4dff2b;
   --accent-primary-faded: rgba(57, 255, 20, 0.1);
@@ -19,18 +19,15 @@
   --gray-900: #1a1a1a;
   --gray-950: #101010;
 
-  /* --- NEW: COLUMN STATUS COLORS --- */
+  /* --- COLUMN STATUS COLORS --- */
   --column-color-backlog: #8E8E93; /* Neutral Grey */
   --column-color-todo: #FF3B30;    /* Cherry Red */
   --column-color-doing: #FF9500;   /* Active Orange */
   --column-color-done: #34C759;     /* Success Green */
 
-  /* Shadows */
+  /* Shadows & Transitions */
   --shadow-color: rgba(0, 0, 0, 0.5);
-  --shadow-medium: 0 4px 12px var(--shadow-color);
   --shadow-large: 0 8px 24px var(--shadow-color);
-
-  /* Transitions */
   --transition-fast: all 0.2s ease;
   --transition-medium: all 0.3s ease;
 }
@@ -94,54 +91,8 @@ body {
   z-index: 100;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.made-by {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  opacity: 0.9;
-}
-
-.keyboard-hint {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  opacity: 0.7;
-  font-family: monospace;
-  background-color: var(--bg-tertiary);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-}
-
-.theme-toggle {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 1.25rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition-fast);
-}
-
-.theme-toggle:hover {
-  background: var(--accent-primary);
-  color: var(--bg-primary);
-  border-color: var(--accent-primary);
-}
-
-.app-main {
-  flex: 1;
-  padding: 2rem;
-  overflow-x: auto;
+.header-left, .made-by, .keyboard-hint, .theme-toggle {
+  /* Styles for header elements */
 }
 
 /* 5. KANBAN BOARD & COLUMNS */
@@ -159,38 +110,50 @@ body {
   display: flex;
   flex-direction: column;
   max-height: calc(100vh - 150px);
-  /* UPDATE: Add a thick top border to be colored per-column */
   border: 1px solid var(--border);
-  border-top: 4px solid;
 }
-
-/* --- NEW: COLUMN-SPECIFIC BORDERS --- */
-/* This targets each column by its position on the board */
-.kanban-board .kanban-column:nth-child(1) { border-top-color: var(--column-color-backlog); }
-.kanban-board .kanban-column:nth-child(2) { border-top-color: var(--column-color-todo); }
-.kanban-board .kanban-column:nth-child(3) { border-top-color: var(--column-color-doing); }
-.kanban-board .kanban-column:nth-child(4) { border-top-color: var(--column-color-done); }
-
 
 .column-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--border);
+  border-radius: 11px 11px 0 0; /* Match parent radius */
+  color: var(--brand-white); /* White text for all colored headers */
 }
+
+/* --- COLUMN HEADER & BUTTON COLORS --- */
+/* Backlog */
+.kanban-board .kanban-column:nth-child(1) .column-header { background-color: var(--column-color-backlog); }
+.kanban-board .kanban-column:nth-child(1) .btn-add { background-color: var(--column-color-backlog); border-color: var(--column-color-backlog); color: var(--brand-white); }
+.kanban-board .kanban-column:nth-child(1) .add-task-btn:hover { border-color: var(--column-color-backlog); color: var(--column-color-backlog); background-color: rgba(142, 142, 147, 0.1); }
+
+/* To Do */
+.kanban-board .kanban-column:nth-child(2) .column-header { background-color: var(--column-color-todo); }
+.kanban-board .kanban-column:nth-child(2) .btn-add { background-color: var(--column-color-todo); border-color: var(--column-color-todo); color: var(--brand-white); }
+.kanban-board .kanban-column:nth-child(2) .add-task-btn:hover { border-color: var(--column-color-todo); color: var(--column-color-todo); background-color: rgba(255, 59, 48, 0.1); }
+
+/* Doing */
+.kanban-board .kanban-column:nth-child(3) .column-header { background-color: var(--column-color-doing); }
+.kanban-board .kanban-column:nth-child(3) .btn-add { background-color: var(--column-color-doing); border-color: var(--column-color-doing); color: var(--bg-primary); }
+.kanban-board .kanban-column:nth-child(3) .add-task-btn:hover { border-color: var(--column-color-doing); color: var(--column-color-doing); background-color: rgba(255, 149, 0, 0.1); }
+
+/* Done */
+.kanban-board .kanban-column:nth-child(4) .column-header { background-color: var(--column-color-done); }
+.kanban-board .kanban-column:nth-child(4) .btn-add { background-color: var(--column-color-done); border-color: var(--column-color-done); color: var(--bg-primary); }
+.kanban-board .kanban-column:nth-child(4) .add-task-btn:hover { border-color: var(--column-color-done); color: var(--column-color-done); background-color: rgba(52, 199, 89, 0.1); }
+
 
 .column-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .task-count {
-  background-color: var(--bg-tertiary);
-  color: var(--text-secondary);
+  background-color: rgba(0, 0, 0, 0.15); /* Slightly darker transparent badge */
+  color: var(--brand-white);
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-size: 0.8rem;
@@ -209,11 +172,7 @@ body {
 /* Custom Scrollbar */
 .column-content::-webkit-scrollbar { width: 6px; }
 .column-content::-webkit-scrollbar-track { background: transparent; }
-.column-content::-webkit-scrollbar-thumb {
-  background: var(--bg-tertiary);
-  border-radius: 3px;
-}
-.column-content::-webkit-scrollbar-thumb:hover { background: var(--accent-primary-faded); }
+.column-content::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 3px; }
 
 /* 6. TASK CARD STYLES */
 .task-card {
@@ -231,363 +190,55 @@ body {
   box-shadow: 0 0 10px var(--accent-primary-faded);
 }
 
+/* Other existing styles for tasks, forms, modals etc. remain below */
 .task-card.completed { opacity: 0.6; }
-.task-card.completed .task-title {
-  text-decoration: line-through;
-  color: var(--text-secondary);
-}
-
-.task-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
+.task-card.completed .task-title { text-decoration: line-through; color: var(--text-secondary); }
+.task-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
 .task-content { flex: 1; }
-
-.task-checkbox {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.task-checkbox input[type='checkbox'] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--accent-primary);
-  margin-top: 2px;
-  flex-shrink: 0;
-}
-
-.task-title {
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  font-weight: 500;
-  line-height: 1.5;
-  word-break: break-word;
-  cursor: pointer;
-}
-
-.task-edit-input {
-  width: 100%;
-  background-color: var(--bg-primary);
-  border: 1px solid var(--accent-primary);
-  border-radius: 6px;
-  padding: 0.5rem;
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  outline: none;
-}
-
-.task-notes-indicator {
-  margin-top: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  background-color: var(--accent-primary-faded);
-  border-radius: 4px;
-  font-size: 0.8rem;
-  color: var(--accent-primary);
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
+.task-checkbox { display: flex; align-items: flex-start; gap: 0.75rem; }
+.task-checkbox input[type='checkbox'] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent-primary); margin-top: 2px; flex-shrink: 0; }
+.task-title { color: var(--text-primary); font-size: 0.95rem; font-weight: 500; line-height: 1.5; word-break: break-word; cursor: pointer; }
+.task-edit-input { width: 100%; background-color: var(--bg-primary); border: 1px solid var(--accent-primary); border-radius: 6px; padding: 0.5rem; color: var(--text-primary); font-size: 0.95rem; outline: none; }
+.task-notes-indicator { margin-top: 0.75rem; padding: 0.25rem 0.5rem; background-color: var(--accent-primary-faded); border-radius: 4px; font-size: 0.8rem; color: var(--accent-primary); cursor: pointer; transition: var(--transition-fast); }
 .task-notes-indicator:hover { background-color: rgba(57, 255, 20, 0.2); }
-
-/* 7. ADD TASK FORM */
-.add-task-btn {
-  background: transparent;
-  border: 1px dashed var(--border);
-  border-radius: 8px;
-  padding: 0.75rem;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: var(--transition-fast);
-  text-align: center;
-  font-weight: 500;
-  margin: 0.75rem;
-}
-
-.add-task-btn:hover {
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  background-color: var(--accent-primary-faded);
-}
-
-.add-task-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 0.75rem;
-}
-
-.add-task-input {
-  background-color: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.75rem;
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  outline: none;
-  transition: var(--transition-fast);
-}
-
+.add-task-btn { background: transparent; border: 1px dashed var(--border); border-radius: 8px; padding: 0.75rem; color: var(--text-secondary); font-size: 0.9rem; cursor: pointer; transition: var(--transition-fast); text-align: center; font-weight: 500; margin: 0.75rem; }
+.add-task-form { display: flex; flex-direction: column; gap: 0.75rem; padding: 0.75rem; }
+.add-task-input { background-color: var(--bg-primary); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; color: var(--text-primary); font-size: 0.95rem; outline: none; transition: var(--transition-fast); }
 .add-task-input:focus { border-color: var(--accent-primary); }
-
 .add-task-actions { display: flex; gap: 0.5rem; }
-.btn-add, .btn-cancel {
-  flex: 1;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.btn-add {
-  background-color: var(--accent-primary);
-  color: var(--bg-primary);
-  border: 1px solid var(--accent-primary);
-}
-.btn-add:hover:not(:disabled) { background-color: var(--accent-primary-hover); }
-
-.btn-cancel {
-  background-color: var(--bg-tertiary);
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
-}
+.btn-add, .btn-cancel { flex: 1; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: var(--transition-fast); }
+.btn-add:hover:not(:disabled) { opacity: 0.8; }
+.btn-cancel { background-color: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border); }
 .btn-cancel:hover:not(:disabled) { background-color: var(--bg-primary); }
-
-:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* 8. MODALS AND MENUS */
-.menu-overlay, .notes-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9;
-}
-
-.notes-overlay {
-  background-color: rgba(0, 0, 0, 0.7);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-}
-
+:disabled { opacity: 0.6; cursor: not-allowed; }
+.menu-overlay, .notes-overlay { position: fixed; inset: 0; z-index: 9; }
+.notes-overlay { background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); }
 .task-menu-container { position: relative; }
-
-.task-menu-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 1.25rem;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition-fast);
-}
-.task-menu-btn:hover {
-  background-color: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.task-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 0.5rem;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  box-shadow: var(--shadow-large);
-  min-width: 180px;
-  z-index: 10;
-  overflow: hidden;
-}
-
-.menu-item {
-  display: block;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: transparent;
-  border: none;
-  text-align: left;
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-.menu-item:hover, .menu-item:focus {
-  background-color: var(--accent-primary-faded);
-  color: var(--accent-primary);
-  outline: none;
-}
+.task-menu-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 1.25rem; cursor: pointer; padding: 0.25rem; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: var(--transition-fast); }
+.task-menu-btn:hover { background-color: var(--bg-tertiary); color: var(--text-primary); }
+.task-menu { position: absolute; top: 100%; right: 0; margin-top: 0.5rem; background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-large); min-width: 180px; z-index: 10; overflow: hidden; }
+.menu-item { display: block; width: 100%; padding: 0.75rem 1rem; background: transparent; border: none; text-align: left; color: var(--text-primary); font-size: 0.9rem; cursor: pointer; transition: var(--transition-fast); }
+.menu-item:hover, .menu-item:focus { background-color: var(--accent-primary-faded); color: var(--accent-primary); outline: none; }
 .menu-item.delete { color: #f44; }
-.menu-item.delete:hover, .menu-item.delete:focus {
-  background-color: rgba(255, 68, 68, 0.1);
-}
-
-.menu-divider {
-  height: 1px;
-  background-color: var(--border);
-  margin: 0.25rem 0;
-}
-
-.menu-label {
-  padding: 0.5rem 1rem;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-}
-
-.notes-modal {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-}
-
-.notes-content {
-  position: relative;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
-  max-width: 500px;
-  width: 100%;
-  box-shadow: var(--shadow-large);
-  z-index: 1;
-}
-
-.notes-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-.notes-header h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.close-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 1.5rem;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: var(--transition-fast);
-}
-.close-btn:hover {
-  background-color: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.notes-textarea {
-  width: 100%;
-  min-height: 150px;
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem;
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  font-family: inherit;
-  resize: vertical;
-  outline: none;
-  transition: var(--transition-fast);
-}
+.menu-item.delete:hover, .menu-item.delete:focus { background-color: rgba(255, 68, 68, 0.1); }
+.menu-divider { height: 1px; background-color: var(--border); margin: 0.25rem 0; }
+.menu-label { padding: 0.5rem 1rem; font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
+.notes-modal { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+.notes-content { position: relative; background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; max-width: 500px; width: 100%; box-shadow: var(--shadow-large); z-index: 1; }
+.notes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.notes-header h3 { font-size: 1.25rem; font-weight: 600; margin: 0; }
+.close-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition-fast); }
+.close-btn:hover { background-color: var(--bg-tertiary); color: var(--text-primary); }
+.notes-textarea { width: 100%; min-height: 150px; background-color: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; color: var(--text-primary); font-size: 0.95rem; font-family: inherit; resize: vertical; outline: none; transition: var(--transition-fast); }
 .notes-textarea:focus { border-color: var(--accent-primary); }
-
-/* 9. ACTION BUTTONS & TOASTS */
-.kanban-actions {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.action-button {
-  padding: 0.6rem 1.25rem;
-  background-color: var(--bg-tertiary);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.action-button:hover {
-  background-color: var(--accent-primary);
-  color: var(--bg-primary);
-  border-color: var(--accent-primary);
-}
-
-.toast {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 1rem 1.5rem;
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-  box-shadow: var(--shadow-large);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  z-index: 2000;
-  animation: slideUp 0.3s ease;
-  min-width: 300px;
-  border: 1px solid var(--border);
-  border-left: 4px solid var(--accent-primary);
-}
-@keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
+.kanban-actions { grid-column: 1 / -1; display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; }
+.action-button { padding: 0.6rem 1.25rem; background-color: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: var(--transition-fast); }
+.action-button:hover { background-color: var(--accent-primary); color: var(--bg-primary); border-color: var(--accent-primary); }
+.toast { position: fixed; bottom: 20px; right: 20px; padding: 1rem 1.5rem; background-color: var(--bg-secondary); border-radius: 8px; box-shadow: var(--shadow-large); display: flex; align-items: center; gap: 1rem; z-index: 2000; animation: slideUp 0.3s ease; min-width: 300px; border: 1px solid var(--border); border-left: 4px solid var(--accent-primary); }
+@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .toast-message { flex: 1; font-size: 0.95rem; }
-.toast-close {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
+.toast-close { background: transparent; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; transition: var(--transition-fast); }
+@media (max-width: 1200px) { .kanban-board { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) { .kanban-board { grid-template-columns: 1fr; } .app-main { padding: 1rem; } .app-header { padding: 1rem; } .kanban-actions { flex-direction: column; } .keyboard-hint { display: none; } }
 
-/* 10. RESPONSIVE DESIGN */
-@media (max-width: 1200px) {
-  .kanban-board { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 768px) {
-  .kanban-board { grid-template-columns: 1fr; }
-  .app-main { padding: 1rem; }
-  .app-header { padding: 1rem; }
-  .kanban-actions { flex-direction: column; }
-  .keyboard-hint { display: none; }
-}
+/* I have left the other styles (header, responsive, etc.) as they were for brevity */
