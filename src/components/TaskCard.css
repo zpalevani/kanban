@@ -6,6 +6,7 @@
   transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
+  z-index: 1; /* MODIFIED: This line was added */
 }
 
 .task-card:hover {
@@ -130,4 +131,32 @@
   .task-menu-container {
     position: static;
   }
+}
+
+/* --- ADD THIS ENTIRE BLOCK TO THE END OF YOUR CSS FILE --- */
+
+/* 
+  This is the FIX. When a card has the menu open, we use the
+  .task-card--menu-open class to lift it above all other cards.
+*/
+.task-card--menu-open {
+  z-index: 100;
+}
+
+/* 
+  This styles the dropdown menu itself. It positions it relative
+  to the card and gives it the highest z-index to ensure it's
+  always on top.
+*/
+.task-menu {
+  position: absolute;
+  top: 50px;
+  right: 15px;
+  z-index: 110;
+  width: 220px;
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px var(--shadow);
+  padding: 0.5rem;
 }
