@@ -1,9 +1,8 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { generateTaskId, validateTaskTitle, sanitizeInput } from '../utils/taskHelpers';
 import { COLUMNS, STORAGE_KEYS } from '../utils/constants';
 
-// This hook encapsulates all logic for managing tasks.
 export function useTasks() {
   const [tasks, setTasks] = useLocalStorage(STORAGE_KEYS.TASKS, []);
   const [toastMessage, setToastMessage] = useState(null);
@@ -62,7 +61,6 @@ export function useTasks() {
     }
   }, [tasks, updateTask]);
 
-  // Memoize tasks by column for performance
   const tasksByColumn = useMemo(() => {
     return COLUMNS.reduce((acc, column) => {
       acc[column.id] = tasks.filter(task => task.columnId === column.id);
@@ -71,9 +69,12 @@ export function useTasks() {
   }, [tasks]);
   
   return {
+    tasks, // CORRECTED: Export raw tasks for export functionality
+    setTasks, // CORRECTED: Export setter for import functionality
     tasksByColumn,
     toastMessage,
     setToastMessage,
+    showToast, // CORRECTED: Export showToast for import/export feedback
     addTask,
     updateTask,
     deleteTask,
