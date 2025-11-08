@@ -196,7 +196,7 @@ input[type='checkbox'] { width: 18px; height: 18px; cursor: pointer; accent-colo
 .custom-checkbox {
   width: 20px;
   height: 20px;
-  background-color: var(--bg-primary);
+  background-color: var(--brand-white);
   border: 2px solid var(--border);
   border-radius: 4px;
   cursor: pointer;
