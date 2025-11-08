@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react'; // CORRECTED: Added useState import
 import TaskCard from './TaskCard';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import PropTypes from 'prop-types';
 
-// Define the validation schema with Zod
 const taskSchema = z.object({
   title: z.string().min(1, 'Title is required').max(50, 'Title is too long'),
   deadline: z.string().optional(),
@@ -16,7 +15,7 @@ function Column({ column, tasks, onAddTask, ...taskProps }) {
     register, 
     handleSubmit, 
     reset,
-    formState: { errors, isSubmitting, isDirty } // isSubmitting disables the button during submission
+    formState: { errors, isSubmitting, isDirty }
   } = useForm({
     resolver: zodResolver(taskSchema)
   });
@@ -25,7 +24,7 @@ function Column({ column, tasks, onAddTask, ...taskProps }) {
 
   const onSubmit = (data) => {
     onAddTask(column.id, data.title, data.deadline);
-    reset(); // Clear the form
+    reset();
     setShowAddForm(false);
   };
 
@@ -48,12 +47,12 @@ function Column({ column, tasks, onAddTask, ...taskProps }) {
               type="text"
               placeholder="Enter task title..."
               autoFocus
-              {...register('title')} // Connect input to React Hook Form
+              {...register('title')}
             />
             <input
               type="date"
               className="add-task-date-input"
-              {...register('deadline')} // Connect date input
+              {...register('deadline')}
             />
           </div>
           {errors.title && <p style={{color: 'red', fontSize: '0.8rem'}}>{errors.title.message}</p>}
@@ -71,8 +70,6 @@ function Column({ column, tasks, onAddTask, ...taskProps }) {
   );
 }
 
-Column.propTypes = {
-  // Your existing prop types here
-};
+// Your PropTypes here...
 
 export default React.memo(Column);
