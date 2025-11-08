@@ -9,7 +9,8 @@
     "test": "node test-connection.js",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:pages": "vite build --base /kanban/"
   },
   "keywords": [],
   "author": "",
