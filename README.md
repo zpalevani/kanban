@@ -2,6 +2,10 @@
 
 A modern, responsive Kanban board built with React and Vite. Features a beautiful dark/light theme with black and dark duck green color scheme.
 
+## 🌐 Live Demo
+
+**GitHub Pages**: [https://zpalevani.github.io/kanban/](https://zpalevani.github.io/kanban/)
+
 ## Features
 
 - 📋 **Four Columns**: Backlog, To Do, Doing, Done
@@ -22,7 +26,7 @@ A modern, responsive Kanban board built with React and Vite. Features a beautifu
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/kanban.git
+git clone https://github.com/zpalevani/kanban.git
 cd kanban
 ```
 
@@ -38,6 +42,20 @@ npm run dev
 
 4. Open your browser and navigate to `http://localhost:5173`
 
+### Build for Production
+
+```bash
+npm run build
+```
+
+The built files will be in the `dist` directory.
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
 ## Usage
 
 - **Add Task**: Click "+ Add Task" button in any column
@@ -48,6 +66,14 @@ npm run dev
 - **Delete Task**: Click the menu (⋮) → "Delete"
 - **Toggle Theme**: Click the sun/moon button in the top right
 
+## Deployment
+
+This project is automatically deployed to GitHub Pages using GitHub Actions. The workflow runs on every push to the `main` branch.
+
+To manually deploy:
+1. Build the project: `npm run build`
+2. Push the `dist` folder to the `gh-pages` branch (or configure GitHub Pages to use the `dist` folder)
+
 ## Built With
 
 - React 18
@@ -57,4 +83,3 @@ npm run dev
 ## Author
 
 Made by Zara Palevani
-
