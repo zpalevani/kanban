@@ -4,6 +4,7 @@ import { useLocalStorage } from './hooks/useLocalStorage'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { STORAGE_KEYS } from './utils/constants'
 import './App.css' // This file will also be updated
+import './theme-premium.css';
 
 function App() {
   const [darkMode, setDarkMode] = useLocalStorage(STORAGE_KEYS.DARK_MODE, true)
