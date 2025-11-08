@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 const useClickOutside = (ref, handler) => {
   useEffect(() => {
@@ -40,7 +41,7 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
 
   const handleSaveNotes = () => {
     onUpdateTask(task.id, { notes: noteInput });
-    setIsNotesModalOpen(false); // Close modal on save
+    setIsNotesModalOpen(false); // Fix: Closes modal on save
   };
 
   return (
@@ -132,5 +133,15 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
     </>
   );
 }
+
+// Add prop types for clarity
+TaskCard.propTypes = {
+  task: PropTypes.object.isRequired,
+  onUpdateTask: PropTypes.func.isRequired,
+  onDeleteTask: PropTypes.func.isRequired,
+  onMoveTask: PropTypes.func.isRequired,
+  onToggleComplete: PropTypes.func.isRequired,
+  availableColumns: PropTypes.array.isRequired,
+};
 
 export default React.memo(TaskCard);
