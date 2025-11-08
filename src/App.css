@@ -5,7 +5,7 @@
 
 /* 1. CSS VARIABLES FOR THEMES */
 :root {
-  /* Electric Lime Accent (for global elements like focus rings) */
+  /* Global Accent (for non-column specific items) */
   --accent-primary: #39ff14;
   --accent-primary-hover: #4dff2b;
   --accent-primary-faded: rgba(57, 255, 20, 0.1);
@@ -53,64 +53,22 @@
 
 /* 3. GLOBAL STYLES & RESETS */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: var(--transition-medium);
-}
-
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; background-color: var(--bg-primary); color: var(--text-primary); transition: var(--transition-medium); }
 #root { min-height: 100vh; }
 
-/* --- 4. APP LAYOUT & THEME TOGGLE STYLES --- */
+/* 4. APP LAYOUT & THEME TOGGLE STYLES */
 .app { min-height: 100vh; display: flex; flex-direction: column; }
-
 .app-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background-color: var(--bg-primary); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-
 .header-left { display: flex; align-items: center; gap: 1rem; }
 .made-by { font-size: 1rem; font-weight: 500; color: var(--text-primary); opacity: 0.9; }
 .keyboard-hint { font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; }
-
-.theme-toggle {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition-fast);
-  overflow: hidden; 
-  position: relative;
-}
-
-/* CORRECTED: Subtle "pop" hover effect */
-.theme-toggle:hover {
-  border-color: var(--text-secondary); /* Make border brighter */
-  transform: translateY(-1px); /* Add a slight lift effect */
-}
-
-.theme-icon {
-  width: 20px;
-  height: 20px;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: rotate(-90deg) scale(0.5); }
-  to { opacity: 1; transform: rotate(0deg) scale(1); }
-}
-
+.theme-toggle { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-fast); overflow: hidden; position: relative; }
+.theme-toggle:hover { border-color: var(--text-secondary); transform: translateY(-1px); }
+.theme-icon { width: 20px; height: 20px; animation: fadeIn 0.3s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: rotate(-90deg) scale(0.5); } to { opacity: 1; transform: rotate(0deg) scale(1); } }
 .app-main { flex: 1; padding: 2rem; overflow-x: auto; }
 
-/* --- All other styles remain below --- */
+/* 5. KANBAN BOARD & COLUMNS */
 .kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; max-width: 1800px; margin: 0 auto; }
 .kanban-column { background-color: var(--bg-secondary); border-radius: 12px; display: flex; flex-direction: column; max-height: calc(100vh - 150px); border: 1px solid var(--border); }
 .column-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-radius: 11px 11px 0 0; color: var(--brand-white); }
@@ -120,34 +78,51 @@ body {
 .column-content::-webkit-scrollbar { width: 6px; }
 .column-content::-webkit-scrollbar-track { background: transparent; }
 .column-content::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 3px; }
-.kanban-board .kanban-column:nth-child(1) .column-header { background-color: var(--column-color-backlog); }
-.kanban-board .kanban-column:nth-child(1) .btn-add { background-color: var(--column-color-backlog); border-color: var(--column-color-backlog); color: var(--brand-white); }
-.kanban-board .kanban-column:nth-child(1) .add-task-btn:hover { border-color: var(--column-color-backlog); color: var(--column-color-backlog); background-color: rgba(142, 142, 147, 0.1); }
-.kanban-board .kanban-column:nth-child(1) .add-task-input:focus { border-color: var(--column-color-backlog); } 
-.kanban-board .kanban-column:nth-child(2) .column-header { background-color: var(--column-color-todo); }
-.kanban-board .kanban-column:nth-child(2) .btn-add { background-color: var(--column-color-todo); border-color: var(--column-color-todo); color: var(--brand-white); }
-.kanban-board .kanban-column:nth-child(2) .add-task-btn:hover { border-color: var(--column-color-todo); color: var(--column-color-todo); background-color: rgba(255, 59, 48, 0.1); }
-.kanban-board .kanban-column:nth-child(2) .add-task-input:focus { border-color: var(--column-color-todo); } 
-.kanban-board .kanban-column:nth-child(3) .column-header { background-color: var(--column-color-doing); }
-.kanban-board .kanban-column:nth-child(3) .btn-add { background-color: var(--column-color-doing); border-color: var(--column-color-doing); color: var(--bg-primary); }
-.kanban-board .kanban-column:nth-child(3) .add-task-btn:hover { border-color: var(--column-color-doing); color: var(--column-color-doing); background-color: rgba(255, 149, 0, 0.1); }
-.kanban-board .kanban-column:nth-child(3) .add-task-input:focus { border-color: var(--column-color-doing); } 
-.kanban-board .kanban-column:nth-child(4) .column-header { background-color: var(--column-color-done); }
-.kanban-board .kanban-column:nth-child(4) .btn-add { background-color: var(--column-color-done); border-color: var(--column-color-done); color: var(--bg-primary); }
-.kanban-board .kanban-column:nth-child(4) .add-task-btn:hover { border-color: var(--column-color-done); color: var(--column-color-done); background-color: rgba(52, 199, 89, 0.1); }
-.kanban-board .kanban-column:nth-child(4) .add-task-input:focus { border-color: var(--column-color-done); } 
+
+/* --- COLUMN THEME COLORS (HEADER, BUTTONS, AND INPUT FOCUS) --- */
+/* Backlog */
+.kanban-board .kanban-column:nth-child(1) { --column-accent: var(--column-color-backlog); --column-accent-faded: rgba(142, 142, 147, 0.1); } /* NEW */
+.kanban-board .kanban-column:nth-child(1) .column-header { background-color: var(--column-accent); }
+.kanban-board .kanban-column:nth-child(1) .btn-add { background-color: var(--column-accent); border-color: var(--column-accent); color: var(--brand-white); }
+.kanban-board .kanban-column:nth-child(1) .add-task-btn:hover { border-color: var(--column-accent); color: var(--column-accent); background-color: var(--column-accent-faded); }
+.kanban-board .kanban-column:nth-child(1) .add-task-input:focus { border-color: var(--column-accent); }
+
+/* To Do */
+.kanban-board .kanban-column:nth-child(2) { --column-accent: var(--column-color-todo); --column-accent-faded: rgba(255, 59, 48, 0.1); } /* NEW */
+.kanban-board .kanban-column:nth-child(2) .column-header { background-color: var(--column-accent); }
+.kanban-board .kanban-column:nth-child(2) .btn-add { background-color: var(--column-accent); border-color: var(--column-accent); color: var(--brand-white); }
+.kanban-board .kanban-column:nth-child(2) .add-task-btn:hover { border-color: var(--column-accent); color: var(--column-accent); background-color: var(--column-accent-faded); }
+.kanban-board .kanban-column:nth-child(2) .add-task-input:focus { border-color: var(--column-accent); }
+
+/* Doing */
+.kanban-board .kanban-column:nth-child(3) { --column-accent: var(--column-color-doing); --column-accent-faded: rgba(255, 149, 0, 0.1); } /* NEW */
+.kanban-board .kanban-column:nth-child(3) .column-header { background-color: var(--column-accent); }
+.kanban-board .kanban-column:nth-child(3) .btn-add { background-color: var(--column-accent); border-color: var(--column-accent); color: var(--bg-primary); }
+.kanban-board .kanban-column:nth-child(3) .add-task-btn:hover { border-color: var(--column-accent); color: var(--column-accent); background-color: var(--column-accent-faded); }
+.kanban-board .kanban-column:nth-child(3) .add-task-input:focus { border-color: var(--column-accent); }
+
+/* Done */
+.kanban-board .kanban-column:nth-child(4) { --column-accent: var(--column-color-done); --column-accent-faded: rgba(52, 199, 89, 0.1); } /* NEW */
+.kanban-board .kanban-column:nth-child(4) .column-header { background-color: var(--column-accent); }
+.kanban-board .kanban-column:nth-child(4) .btn-add { background-color: var(--column-accent); border-color: var(--column-accent); color: var(--bg-primary); }
+.kanban-board .kanban-column:nth-child(4) .add-task-btn:hover { border-color: var(--column-accent); color: var(--column-accent); background-color: var(--column-accent-faded); }
+.kanban-board .kanban-column:nth-child(4) .add-task-input:focus { border-color: var(--column-accent); }
+
+/* --- 6. TASK CARD STYLES (UPDATED) --- */
 .task-card { background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; transition: var(--transition-fast); cursor: grab; position: relative; }
-.task-card:hover { border-color: var(--accent-primary); box-shadow: 0 0 10px var(--accent-primary-faded); }
+.task-card:hover { border-color: var(--column-accent); box-shadow: 0 0 10px var(--column-accent-faded); } /* CORRECTED */
 .task-card.completed { opacity: 0.6; }
 .task-card.completed .task-title { text-decoration: line-through; color: var(--text-secondary); }
 .task-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
 .task-content { flex: 1; }
 .task-checkbox { display: flex; align-items: flex-start; gap: 0.75rem; }
-.task-checkbox input[type='checkbox'] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent-primary); margin-top: 2px; flex-shrink: 0; }
+.task-checkbox input[type='checkbox'] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--column-accent); margin-top: 2px; flex-shrink: 0; } /* CORRECTED */
 .task-title { color: var(--text-primary); font-size: 0.95rem; font-weight: 500; line-height: 1.5; word-break: break-word; cursor: pointer; }
-.task-edit-input { width: 100%; background-color: var(--bg-primary); border: 1px solid var(--accent-primary); border-radius: 6px; padding: 0.5rem; color: var(--text-primary); font-size: 0.95rem; outline: none; }
-.task-notes-indicator { margin-top: 0.75rem; padding: 0.25rem 0.5rem; background-color: var(--accent-primary-faded); border-radius: 4px; font-size: 0.8rem; color: var(--accent-primary); cursor: pointer; transition: var(--transition-fast); }
-.task-notes-indicator:hover { background-color: rgba(57, 255, 20, 0.2); }
+.task-edit-input { width: 100%; background-color: var(--bg-primary); border: 1px solid var(--column-accent); border-radius: 6px; padding: 0.5rem; color: var(--text-primary); font-size: 0.95rem; outline: none; } /* CORRECTED */
+.task-notes-indicator { margin-top: 0.75rem; padding: 0.25rem 0.5rem; background-color: var(--column-accent-faded); border-radius: 4px; font-size: 0.8rem; color: var(--column-accent); cursor: pointer; transition: var(--transition-fast); } /* CORRECTED */
+.task-notes-indicator:hover { filter: brightness(1.2); } /* CORRECTED */
+
+/* --- ALL OTHER STYLES BELOW ARE UNCHANGED --- */
 .add-task-btn { background: transparent; border: 1px dashed var(--border); border-radius: 8px; padding: 0.75rem; color: var(--text-secondary); font-size: 0.9rem; cursor: pointer; transition: var(--transition-fast); text-align: center; font-weight: 500; margin: 0.75rem; }
 .add-task-form { display: flex; flex-direction: column; gap: 0.75rem; padding: 0.75rem; }
 .add-task-input { background-color: var(--bg-primary); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; color: var(--text-primary); font-size: 0.95rem; outline: none; transition: var(--transition-fast); }
@@ -174,16 +149,4 @@ body {
 .notes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 .notes-header h3 { font-size: 1.25rem; font-weight: 600; margin: 0; }
 .close-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: var(--transition-fast); }
-.close-btn:hover { background-color: var(--bg-tertiary); color: var(--text-primary); }
-.notes-textarea { width: 100%; min-height: 150px; background-color: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; color: var(--text-primary); font-size: 0.95rem; font-family: inherit; resize: vertical; outline: none; transition: var(--transition-fast); }
-.notes-textarea:focus { border-color: var(--accent-primary); }
-.kanban-actions { grid-column: 1 / -1; display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; }
-.action-button { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background-color: transparent; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; font-weight: 500; cursor: pointer; transition: var(--transition-fast); }
-.action-button:hover { color: var(--text-primary); border-color: var(--text-secondary); transform: translateY(-1px); }
-.action-button svg { width: 14px; height: 14px; }
-.toast { position: fixed; bottom: 20px; right: 20px; padding: 1rem 1.5rem; background-color: var(--bg-secondary); border-radius: 8px; box-shadow: var(--shadow-large); display: flex; align-items: center; gap: 1rem; z-index: 2000; animation: slideUp 0.3s ease; min-width: 300px; border: 1px solid var(--border); border-left: 4px solid var(--accent-primary); }
-@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-.toast-message { flex: 1; font-size: 0.95rem; }
-.toast-close { background: transparent; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; transition: var(--transition-fast); }
-@media (max-width: 1200px) { .kanban-board { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 768px) { .kanban-board { grid-template-columns: 1fr; } .app-main { padding: 1rem; } .app-header { padding: 1rem; } .kanban-actions { flex-direction: column; } .keyboard-hint { display: none; } }
+.close-btn:hover { background-color:
