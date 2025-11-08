@@ -137,8 +137,13 @@
   color: var(--white);
 }
 
-.btn-add:hover {
+.btn-add:hover:not(:disabled) {
   background-color: var(--accent-hover);
+}
+
+.btn-add:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-cancel {
@@ -147,7 +152,17 @@
   border: 1px solid var(--border);
 }
 
-.btn-cancel:hover {
+.btn-cancel:hover:not(:disabled) {
   background-color: var(--bg-primary);
   color: var(--text-primary);
+}
+
+.btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.add-task-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

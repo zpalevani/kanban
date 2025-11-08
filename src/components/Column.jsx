@@ -1,27 +1,46 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import TaskCard from './TaskCard'
 import './Column.css'
 
 function Column({ column, tasks, onAddTask, onUpdateTask, onDeleteTask, onMoveTask, onToggleComplete, availableColumns }) {
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [isAdding, setIsAdding] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const inputRef = useRef(null)
 
-  const handleAddTask = (e) => {
-    e.preventDefault()
-    if (newTaskTitle.trim()) {
-      onAddTask(column.id, newTaskTitle.trim())
-      setNewTaskTitle('')
-      setIsAdding(false)
+  useEffect(() => {
+    if (isAdding && inputRef.current) {
+      inputRef.current.focus()
     }
+  }, [isAdding])
+
+  const handleAddTask = async (e) => {
+    e.preventDefault()
+    if (isSubmitting || !newTaskTitle.trim()) return
+
+    setIsSubmitting(true)
+    onAddTask(column.id, newTaskTitle.trim())
+    setNewTaskTitle('')
+    setIsAdding(false)
+    
+    // Small delay to prevent double-clicks
+    setTimeout(() => setIsSubmitting(false), 300)
+  }
+
+  const handleCancel = () => {
+    setNewTaskTitle('')
+    setIsAdding(false)
   }
 
   return (
-    <div className="kanban-column">
+    <div className="kanban-column" role="region" aria-label={`${column.title} column`}>
       <div className="column-header">
         <h2 className="column-title">{column.title}</h2>
-        <span className="task-count">{tasks.length}</span>
+        <span className="task-count" aria-label={`${tasks.length} tasks in ${column.title}`}>
+          {tasks.length}
+        </span>
       </div>
-      <div className="column-content">
+      <div className="column-content" role="list" aria-label={`Tasks in ${column.title}`}>
         {tasks.map(task => (
           <TaskCard
             key={task.id}
@@ -34,29 +53,36 @@ function Column({ column, tasks, onAddTask, onUpdateTask, onDeleteTask, onMoveTa
           />
         ))}
         {isAdding ? (
-          <form onSubmit={handleAddTask} className="add-task-form">
+          <form onSubmit={handleAddTask} className="add-task-form" aria-label="Add new task">
             <input
+              ref={inputRef}
               type="text"
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
               placeholder="Enter task title..."
               className="add-task-input"
-              autoFocus
-              onBlur={() => {
-                if (!newTaskTitle.trim()) {
-                  setIsAdding(false)
+              aria-label="Task title"
+              maxLength={500}
+              disabled={isSubmitting}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  handleCancel()
                 }
               }}
             />
             <div className="add-task-actions">
-              <button type="submit" className="btn-add">Add</button>
+              <button 
+                type="submit" 
+                className="btn-add"
+                disabled={isSubmitting || !newTaskTitle.trim()}
+              >
+                {isSubmitting ? 'Adding...' : 'Add'}
+              </button>
               <button 
                 type="button" 
                 className="btn-cancel"
-                onClick={() => {
-                  setIsAdding(false)
-                  setNewTaskTitle('')
-                }}
+                onClick={handleCancel}
+                disabled={isSubmitting}
               >
                 Cancel
               </button>
@@ -66,6 +92,7 @@ function Column({ column, tasks, onAddTask, onUpdateTask, onDeleteTask, onMoveTa
           <button 
             className="add-task-btn"
             onClick={() => setIsAdding(true)}
+            aria-label={`Add task to ${column.title} column`}
           >
             + Add Task
           </button>

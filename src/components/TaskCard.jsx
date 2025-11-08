@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+import TaskMenu from './TaskMenu'
+import TaskNotes from './TaskNotes'
 import './TaskCard.css'
 
 function TaskCard({ task, onUpdate, onDelete, onMove, onToggleComplete, availableColumns }) {
@@ -6,37 +8,58 @@ function TaskCard({ task, onUpdate, onDelete, onMove, onToggleComplete, availabl
   const [editTitle, setEditTitle] = useState(task.title)
   const [showNotes, setShowNotes] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
+  const inputRef = useRef(null)
+
+  useEffect(() => {
+    setEditTitle(task.title)
+  }, [task.title])
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.select()
+    }
+  }, [isEditing])
 
   const handleSave = () => {
-    if (editTitle.trim()) {
+    if (editTitle.trim() && editTitle.trim() !== task.title) {
       onUpdate(task.id, { title: editTitle.trim() })
-      setIsEditing(false)
     }
+    setIsEditing(false)
+  }
+
+  const handleCancel = () => {
+    setEditTitle(task.title)
+    setIsEditing(false)
   }
 
   const handleMove = (columnId) => {
     onMove(task.id, columnId)
-    setShowMenu(false)
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSave()
+    } else if (e.key === 'Escape') {
+      handleCancel()
+    }
   }
 
   return (
-    <div className={`task-card ${task.completed ? 'completed' : ''}`}>
+    <div className={`task-card ${task.completed ? 'completed' : ''}`} role="listitem">
       <div className="task-header">
         {isEditing ? (
           <input
+            ref={inputRef}
             type="text"
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
             onBlur={handleSave}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleSave()
-              if (e.key === 'Escape') {
-                setEditTitle(task.title)
-                setIsEditing(false)
-              }
-            }}
+            onKeyDown={handleKeyDown}
             className="task-edit-input"
-            autoFocus
+            aria-label="Edit task title"
+            maxLength={500}
           />
         ) : (
           <div className="task-content">
@@ -45,8 +68,21 @@ function TaskCard({ task, onUpdate, onDelete, onMove, onToggleComplete, availabl
                 type="checkbox"
                 checked={task.completed}
                 onChange={() => onToggleComplete(task.id)}
+                aria-label={`Mark task "${task.title}" as ${task.completed ? 'incomplete' : 'complete'}`}
               />
-              <span className="task-title" onClick={() => setIsEditing(true)}>
+              <span 
+                className="task-title" 
+                onClick={() => setIsEditing(true)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setIsEditing(true)
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-label={`Edit task: ${task.title}`}
+              >
                 {task.title}
               </span>
             </label>
@@ -56,84 +92,46 @@ function TaskCard({ task, onUpdate, onDelete, onMove, onToggleComplete, availabl
           <button
             className="task-menu-btn"
             onClick={() => setShowMenu(!showMenu)}
-            aria-label="Task menu"
+            aria-label="Task options menu"
+            aria-expanded={showMenu}
+            aria-haspopup="true"
           >
             ⋮
           </button>
-          {showMenu && (
-            <>
-              <div className="menu-overlay" onClick={() => setShowMenu(false)} />
-              <div className="task-menu">
-                <button
-                  className="menu-item"
-                  onClick={() => {
-                    setIsEditing(true)
-                    setShowMenu(false)
-                  }}
-                >
-                  ✏️ Edit
-                </button>
-                <button
-                  className="menu-item"
-                  onClick={() => {
-                    setShowNotes(true)
-                    setShowMenu(false)
-                  }}
-                >
-                  📝 Notes
-                </button>
-                <div className="menu-divider" />
-                <div className="menu-section">
-                  <span className="menu-label">Move to:</span>
-                  {availableColumns.map(column => (
-                    <button
-                      key={column.id}
-                      className="menu-item"
-                      onClick={() => handleMove(column.id)}
-                    >
-                      → {column.title}
-                    </button>
-                  ))}
-                </div>
-                <div className="menu-divider" />
-                <button
-                  className="menu-item delete"
-                  onClick={() => {
-                    onDelete(task.id)
-                    setShowMenu(false)
-                  }}
-                >
-                  🗑️ Delete
-                </button>
-              </div>
-            </>
-          )}
+          <TaskMenu
+            showMenu={showMenu}
+            onClose={() => setShowMenu(false)}
+            onEdit={() => setIsEditing(true)}
+            onShowNotes={() => setShowNotes(true)}
+            onMove={handleMove}
+            onDelete={() => onDelete(task.id)}
+            availableColumns={availableColumns}
+          />
         </div>
       </div>
       {task.notes && (
-        <div className="task-notes-indicator" onClick={() => setShowNotes(true)}>
+        <div 
+          className="task-notes-indicator" 
+          onClick={() => setShowNotes(true)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              setShowNotes(true)
+            }
+          }}
+          tabIndex={0}
+          role="button"
+          aria-label="View task notes"
+        >
           📝 Has notes
         </div>
       )}
       {showNotes && (
-        <div className="notes-modal">
-          <div className="notes-overlay" onClick={() => setShowNotes(false)} />
-          <div className="notes-content">
-            <div className="notes-header">
-              <h3>Notes</h3>
-              <button className="close-btn" onClick={() => setShowNotes(false)}>
-                ×
-              </button>
-            </div>
-            <textarea
-              value={task.notes || ''}
-              onChange={(e) => onUpdate(task.id, { notes: e.target.value })}
-              placeholder="Add notes to this task..."
-              className="notes-textarea"
-              rows="6"
-            />
-          </div>
-        </div>
+        <TaskNotes
+          task={task}
+          onUpdate={onUpdate}
+          onClose={() => setShowNotes(false)}
+        />
       )}
     </div>
   )

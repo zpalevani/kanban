@@ -1,77 +1,84 @@
-import React, { useState, useEffect } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import Column from './Column'
+import { useLocalStorage } from '../hooks/useLocalStorage'
+import { generateTaskId, validateTaskTitle, sanitizeInput } from '../utils/taskHelpers'
+import { COLUMNS, STORAGE_KEYS } from '../utils/constants'
 import './KanbanBoard.css'
 
-const COLUMNS = [
-  { id: 'backlog', title: 'Backlog' },
-  { id: 'todo', title: 'To Do' },
-  { id: 'doing', title: 'Doing' },
-  { id: 'done', title: 'Done' }
-]
-
 function KanbanBoard() {
-  const [tasks, setTasks] = useState(() => {
-    try {
-      const saved = localStorage.getItem('kanbanTasks')
-      return saved ? JSON.parse(saved) : []
-    } catch {
-      return []
-    }
-  })
+  const [tasks, setTasks] = useLocalStorage(STORAGE_KEYS.TASKS, [])
 
-  useEffect(() => {
-    try {
-      localStorage.setItem('kanbanTasks', JSON.stringify(tasks))
-    } catch (e) {
-      console.error('Error saving tasks:', e)
+  const addTask = useCallback((columnId, title) => {
+    const sanitizedTitle = sanitizeInput(title)
+    const validation = validateTaskTitle(sanitizedTitle)
+    
+    if (!validation.valid) {
+      console.warn('Cannot add task:', validation.error)
+      // Could show toast notification here
+      return
     }
-  }, [tasks])
 
-  const addTask = (columnId, title) => {
     const newTask = {
-      id: Date.now().toString(),
-      title,
+      id: generateTaskId(),
+      title: sanitizedTitle,
       columnId,
       completed: false,
       notes: '',
       createdAt: new Date().toISOString()
     }
-    setTasks([...tasks, newTask])
-  }
+    setTasks(prevTasks => [...prevTasks, newTask])
+  }, [setTasks])
 
-  const updateTask = (taskId, updates) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, ...updates } : task
-    ))
-  }
+  const updateTask = useCallback((taskId, updates) => {
+    setTasks(prevTasks => prevTasks.map(task => {
+      if (task.id === taskId) {
+        // Sanitize title if it's being updated
+        if (updates.title !== undefined) {
+          const sanitizedTitle = sanitizeInput(updates.title)
+          const validation = validateTaskTitle(sanitizedTitle)
+          if (!validation.valid) {
+            console.warn('Cannot update task:', validation.error)
+            return task
+          }
+          return { ...task, ...updates, title: sanitizedTitle }
+        }
+        return { ...task, ...updates }
+      }
+      return task
+    }))
+  }, [setTasks])
 
-  const deleteTask = (taskId) => {
-    setTasks(tasks.filter(task => task.id !== taskId))
-  }
+  const deleteTask = useCallback((taskId) => {
+    setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId))
+  }, [setTasks])
 
-  const moveTask = (taskId, newColumnId) => {
-    setTasks(tasks.map(task => 
+  const moveTask = useCallback((taskId, newColumnId) => {
+    setTasks(prevTasks => prevTasks.map(task => 
       task.id === taskId ? { ...task, columnId: newColumnId } : task
     ))
-  }
+  }, [setTasks])
 
-  const toggleComplete = (taskId) => {
-    setTasks(tasks.map(task => 
+  const toggleComplete = useCallback((taskId) => {
+    setTasks(prevTasks => prevTasks.map(task => 
       task.id === taskId ? { ...task, completed: !task.completed } : task
     ))
-  }
+  }, [setTasks])
 
-  const getTasksByColumn = (columnId) => {
-    return tasks.filter(task => task.columnId === columnId)
-  }
+  // Memoize tasks by column for performance
+  const tasksByColumn = useMemo(() => {
+    return COLUMNS.reduce((acc, column) => {
+      acc[column.id] = tasks.filter(task => task.columnId === column.id)
+      return acc
+    }, {})
+  }, [tasks])
 
   return (
-    <div className="kanban-board">
+    <div className="kanban-board" role="main" aria-label="Kanban board">
       {COLUMNS.map(column => (
         <Column
           key={column.id}
           column={column}
-          tasks={getTasksByColumn(column.id)}
+          tasks={tasksByColumn[column.id] || []}
           onAddTask={addTask}
           onUpdateTask={updateTask}
           onDeleteTask={deleteTask}
