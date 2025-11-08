@@ -5,13 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import PropTypes from 'prop-types';
 
-// Define the validation schema with Zod
 const taskSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(50, 'Title is too long'),
+  title: z.string().min(1, 'Title is required').max(100, 'Title must be 100 characters or less'),
   deadline: z.string().optional(),
 });
 
-function Column({ column, tasks, onAddTask, ...taskProps }) {
+function Column({ column, tasks, onAddTask, onUpdateTask, onDeleteTask, onMoveTask, onToggleComplete, availableColumns }) {
   const { 
     register, 
     handleSubmit, 
@@ -19,17 +18,18 @@ function Column({ column, tasks, onAddTask, ...taskProps }) {
     formState: { errors, isSubmitting, isDirty }
   } = useForm({
     resolver: zodResolver(taskSchema),
-    // CORRECTED: Set default values to prevent placeholder issues
-    defaultValues: {
-      title: "",
-      deadline: ""
-    }
+    defaultValues: { title: "", deadline: "" }
   });
 
   const [showAddForm, setShowAddForm] = useState(false);
 
   const onSubmit = (data) => {
     onAddTask(column.id, data.title, data.deadline);
+    reset();
+    setShowAddForm(false);
+  };
+  
+  const handleCancel = () => {
     reset();
     setShowAddForm(false);
   };
@@ -42,7 +42,15 @@ function Column({ column, tasks, onAddTask, ...taskProps }) {
       </header>
       <div className="column-content">
         {tasks.map(task => (
-          <TaskCard key={task.id} task={task} {...taskProps} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            onUpdateTask={onUpdateTask}
+            onDeleteTask={onDeleteTask}
+            onMoveTask={onMoveTask}
+            onToggleComplete={onToggleComplete}
+            availableColumns={availableColumns}
+          />
         ))}
       </div>
       {showAddForm ? (
@@ -66,7 +74,7 @@ function Column({ column, tasks, onAddTask, ...taskProps }) {
             <button type="submit" className="btn-add" disabled={isSubmitting || !isDirty}>
               {isSubmitting ? 'Adding...' : 'Add'}
             </button>
-            <button type="button" className="btn-cancel" onClick={() => setShowAddForm(false)}>Cancel</button>
+            <button type="button" className="btn-cancel" onClick={handleCancel}>Cancel</button>
           </div>
         </form>
       ) : (
@@ -76,6 +84,6 @@ function Column({ column, tasks, onAddTask, ...taskProps }) {
   );
 }
 
-// Your PropTypes here...
+// PropTypes here...
 
 export default React.memo(Column);

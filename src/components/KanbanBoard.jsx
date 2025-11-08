@@ -1,18 +1,17 @@
 import React, { useCallback, useRef } from 'react';
 import Column from './Column';
 import Toast from './Toast';
-import { useTasks } from '../hooks/useTasks'; // We still use our custom hook
+import { useTasks } from '../hooks/useTasks';
 import { COLUMNS } from '../utils/constants';
 
 function KanbanBoard() {
-  // All state logic is still handled by the useTasks hook
   const {
-    tasks, // We need the raw tasks array for export
-    setTasks, // We need setTasks for import
+    tasks,
+    setTasks,
     tasksByColumn,
     toastMessage,
     setToastMessage,
-    showToast, // We need showToast for import/export feedback
+    showToast,
     addTask,
     updateTask,
     deleteTask,
@@ -22,7 +21,6 @@ function KanbanBoard() {
 
   const importInputRef = useRef(null);
 
-  // CORRECTED: Re-added the export logic
   const handleExport = useCallback(() => {
     try {
       const dataStr = JSON.stringify(tasks, null, 2);
@@ -42,7 +40,6 @@ function KanbanBoard() {
     }
   }, [tasks, showToast]);
 
-  // CORRECTED: Re-added the import logic
   const handleImport = useCallback((event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -62,13 +59,10 @@ function KanbanBoard() {
         console.error('Import error:', error);
       }
     };
-    reader.onerror = () => {
-      showToast('Failed to read file', 'error');
-    };
+    reader.onerror = () => showToast('Failed to read file', 'error');
     reader.readAsText(file);
     event.target.value = '';
   }, [setTasks, showToast]);
-
 
   return (
     <>
