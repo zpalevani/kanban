@@ -5,7 +5,7 @@
 
 /* 1. CSS VARIABLES FOR THEMES */
 :root {
-  /* Electric Lime Accent (for global elements like theme toggle, focus rings) */
+  /* Electric Lime Accent (for global elements like hover, focus rings) */
   --accent-primary: #39ff14;
   --accent-primary-hover: #4dff2b;
   --accent-primary-faded: rgba(57, 255, 20, 0.1);
@@ -52,11 +52,7 @@
 }
 
 /* 3. GLOBAL STYLES & RESETS */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
@@ -68,129 +64,55 @@ body {
   transition: var(--transition-medium);
 }
 
-#root {
-  min-height: 100vh;
-}
+#root { min-height: 100vh; }
 
 /* 4. APP LAYOUT */
-.app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+.app { min-height: 100vh; display: flex; flex-direction: column; }
+.app-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background-color: var(--bg-primary); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+.header-left, .made-by, .keyboard-hint, .theme-toggle { /* Styles for header elements */ }
+.app-main { flex: 1; padding: 2rem; overflow-x: auto; }
 
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: var(--bg-primary);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-left, .made-by, .keyboard-hint, .theme-toggle {
-  /* Styles for header elements */
-}
 
 /* 5. KANBAN BOARD & COLUMNS */
-.kanban-board {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  max-width: 1800px;
-  margin: 0 auto;
-}
+.kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; max-width: 1800px; margin: 0 auto; }
+.kanban-column { background-color: var(--bg-secondary); border-radius: 12px; display: flex; flex-direction: column; max-height: calc(100vh - 150px); border: 1px solid var(--border); }
+.column-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-radius: 11px 11px 0 0; color: var(--brand-white); }
+.column-title { font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+.task-count { background-color: rgba(0, 0, 0, 0.15); color: var(--brand-white); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+.column-content { flex: 1; padding: 0.75rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; }
+.column-content::-webkit-scrollbar { width: 6px; }
+.column-content::-webkit-scrollbar-track { background: transparent; }
+.column-content::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 3px; }
 
-.kanban-column {
-  background-color: var(--bg-secondary);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  max-height: calc(100vh - 150px);
-  border: 1px solid var(--border);
-}
-
-.column-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.25rem;
-  border-radius: 11px 11px 0 0; /* Match parent radius */
-  color: var(--brand-white); /* White text for all colored headers */
-}
-
-/* --- COLUMN HEADER & BUTTON COLORS --- */
+/* --- COLUMN THEME COLORS (HEADER, BUTTONS, AND INPUT FOCUS) --- */
 /* Backlog */
 .kanban-board .kanban-column:nth-child(1) .column-header { background-color: var(--column-color-backlog); }
 .kanban-board .kanban-column:nth-child(1) .btn-add { background-color: var(--column-color-backlog); border-color: var(--column-color-backlog); color: var(--brand-white); }
 .kanban-board .kanban-column:nth-child(1) .add-task-btn:hover { border-color: var(--column-color-backlog); color: var(--column-color-backlog); background-color: rgba(142, 142, 147, 0.1); }
+.kanban-board .kanban-column:nth-child(1) .add-task-input:focus { border-color: var(--column-color-backlog); } /* NEW */
 
 /* To Do */
 .kanban-board .kanban-column:nth-child(2) .column-header { background-color: var(--column-color-todo); }
 .kanban-board .kanban-column:nth-child(2) .btn-add { background-color: var(--column-color-todo); border-color: var(--column-color-todo); color: var(--brand-white); }
 .kanban-board .kanban-column:nth-child(2) .add-task-btn:hover { border-color: var(--column-color-todo); color: var(--column-color-todo); background-color: rgba(255, 59, 48, 0.1); }
+.kanban-board .kanban-column:nth-child(2) .add-task-input:focus { border-color: var(--column-color-todo); } /* NEW */
 
 /* Doing */
 .kanban-board .kanban-column:nth-child(3) .column-header { background-color: var(--column-color-doing); }
 .kanban-board .kanban-column:nth-child(3) .btn-add { background-color: var(--column-color-doing); border-color: var(--column-color-doing); color: var(--bg-primary); }
 .kanban-board .kanban-column:nth-child(3) .add-task-btn:hover { border-color: var(--column-color-doing); color: var(--column-color-doing); background-color: rgba(255, 149, 0, 0.1); }
+.kanban-board .kanban-column:nth-child(3) .add-task-input:focus { border-color: var(--column-color-doing); } /* NEW */
 
 /* Done */
 .kanban-board .kanban-column:nth-child(4) .column-header { background-color: var(--column-color-done); }
 .kanban-board .kanban-column:nth-child(4) .btn-add { background-color: var(--column-color-done); border-color: var(--column-color-done); color: var(--bg-primary); }
 .kanban-board .kanban-column:nth-child(4) .add-task-btn:hover { border-color: var(--column-color-done); color: var(--column-color-done); background-color: rgba(52, 199, 89, 0.1); }
+.kanban-board .kanban-column:nth-child(4) .add-task-input:focus { border-color: var(--column-color-done); } /* NEW */
 
-
-.column-title {
-  font-size: 1rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.task-count {
-  background-color: rgba(0, 0, 0, 0.15); /* Slightly darker transparent badge */
-  color: var(--brand-white);
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.column-content {
-  flex: 1;
-  padding: 0.75rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-/* Custom Scrollbar */
-.column-content::-webkit-scrollbar { width: 6px; }
-.column-content::-webkit-scrollbar-track { background: transparent; }
-.column-content::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 3px; }
 
 /* 6. TASK CARD STYLES */
-.task-card {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem;
-  transition: var(--transition-fast);
-  cursor: grab;
-  position: relative;
-}
-
-.task-card:hover {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 10px var(--accent-primary-faded);
-}
-
-/* Other existing styles for tasks, forms, modals etc. remain below */
+.task-card { background-color: var(--bg-secondary); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; transition: var(--transition-fast); cursor: grab; position: relative; }
+.task-card:hover { border-color: var(--accent-primary); box-shadow: 0 0 10px var(--accent-primary-faded); }
 .task-card.completed { opacity: 0.6; }
 .task-card.completed .task-title { text-decoration: line-through; color: var(--text-secondary); }
 .task-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
@@ -201,16 +123,20 @@ body {
 .task-edit-input { width: 100%; background-color: var(--bg-primary); border: 1px solid var(--accent-primary); border-radius: 6px; padding: 0.5rem; color: var(--text-primary); font-size: 0.95rem; outline: none; }
 .task-notes-indicator { margin-top: 0.75rem; padding: 0.25rem 0.5rem; background-color: var(--accent-primary-faded); border-radius: 4px; font-size: 0.8rem; color: var(--accent-primary); cursor: pointer; transition: var(--transition-fast); }
 .task-notes-indicator:hover { background-color: rgba(57, 255, 20, 0.2); }
+
+/* 7. ADD TASK FORM */
 .add-task-btn { background: transparent; border: 1px dashed var(--border); border-radius: 8px; padding: 0.75rem; color: var(--text-secondary); font-size: 0.9rem; cursor: pointer; transition: var(--transition-fast); text-align: center; font-weight: 500; margin: 0.75rem; }
 .add-task-form { display: flex; flex-direction: column; gap: 0.75rem; padding: 0.75rem; }
 .add-task-input { background-color: var(--bg-primary); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; color: var(--text-primary); font-size: 0.95rem; outline: none; transition: var(--transition-fast); }
-.add-task-input:focus { border-color: var(--accent-primary); }
+/* REMOVED the old global focus style: .add-task-input:focus { border-color: var(--accent-primary); } */
 .add-task-actions { display: flex; gap: 0.5rem; }
 .btn-add, .btn-cancel { flex: 1; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: var(--transition-fast); }
 .btn-add:hover:not(:disabled) { opacity: 0.8; }
 .btn-cancel { background-color: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border); }
 .btn-cancel:hover:not(:disabled) { background-color: var(--bg-primary); }
 :disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* 8. MODALS AND MENUS */
 .menu-overlay, .notes-overlay { position: fixed; inset: 0; z-index: 9; }
 .notes-overlay { background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); }
 .task-menu-container { position: relative; }
@@ -231,6 +157,8 @@ body {
 .close-btn:hover { background-color: var(--bg-tertiary); color: var(--text-primary); }
 .notes-textarea { width: 100%; min-height: 150px; background-color: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; color: var(--text-primary); font-size: 0.95rem; font-family: inherit; resize: vertical; outline: none; transition: var(--transition-fast); }
 .notes-textarea:focus { border-color: var(--accent-primary); }
+
+/* 9. ACTION BUTTONS & TOASTS */
 .kanban-actions { grid-column: 1 / -1; display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; }
 .action-button { padding: 0.6rem 1.25rem; background-color: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: var(--transition-fast); }
 .action-button:hover { background-color: var(--accent-primary); color: var(--bg-primary); border-color: var(--accent-primary); }
@@ -238,7 +166,7 @@ body {
 @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .toast-message { flex: 1; font-size: 0.95rem; }
 .toast-close { background: transparent; border: none; color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; transition: var(--transition-fast); }
+
+/* 10. RESPONSIVE DESIGN */
 @media (max-width: 1200px) { .kanban-board { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 768px) { .kanban-board { grid-template-columns: 1fr; } .app-main { padding: 1rem; } .app-header { padding: 1rem; } .kanban-actions { flex-direction: column; } .keyboard-hint { display: none; } }
-
-/* I have left the other styles (header, responsive, etc.) as they were for brevity */
