@@ -1,109 +1,73 @@
-import React, { useState, useRef, useEffect } from 'react'
-import PropTypes from 'prop-types'
-import TaskCard from './TaskCard'
-import { columnPropTypes } from './Column.propTypes'
-import './Column.css'
+import React, { useState } from 'react';
+import TaskCard from './TaskCard';
+import PropTypes from 'prop-types';
 
 function Column({ column, tasks, onAddTask, onUpdateTask, onDeleteTask, onMoveTask, onToggleComplete, availableColumns }) {
-  const [newTaskTitle, setNewTaskTitle] = useState('')
-  const [isAdding, setIsAdding] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const inputRef = useRef(null)
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newDeadline, setNewDeadline] = useState(''); // New state for deadline
 
-  useEffect(() => {
-    if (isAdding && inputRef.current) {
-      inputRef.current.focus()
+  const handleAddTask = (e) => {
+    e.preventDefault();
+    if (newTaskTitle.trim()) {
+      onAddTask(column.id, newTaskTitle, newDeadline); // Pass deadline to handler
+      setNewTaskTitle('');
+      setNewDeadline('');
+      setShowAddForm(false);
     }
-  }, [isAdding])
-
-  const handleAddTask = async (e) => {
-    e.preventDefault()
-    if (isSubmitting || !newTaskTitle.trim()) return
-
-    setIsSubmitting(true)
-    onAddTask(column.id, newTaskTitle.trim())
-    setNewTaskTitle('')
-    setIsAdding(false)
-    
-    // Small delay to prevent double-clicks
-    setTimeout(() => setIsSubmitting(false), 300)
-  }
-
-  const handleCancel = () => {
-    setNewTaskTitle('')
-    setIsAdding(false)
-  }
+  };
 
   return (
-    <div className="kanban-column" role="region" aria-label={`${column.title} column`}>
-      <div className="column-header">
-        <h2 className="column-title">{column.title}</h2>
-        <span className="task-count" aria-label={`${tasks.length} tasks in ${column.title}`}>
-          {tasks.length}
-        </span>
-      </div>
-      <div className="column-content" role="list" aria-label={`Tasks in ${column.title}`}>
+    <div className="kanban-column" aria-labelledby={`column-title-${column.id}`}>
+      <header className="column-header">
+        <h2 id={`column-title-${column.id}`} className="column-title">{column.title}</h2>
+        <span className="task-count">{tasks.length}</span>
+      </header>
+      <div className="column-content">
         {tasks.map(task => (
           <TaskCard
             key={task.id}
             task={task}
-            onUpdate={onUpdateTask}
-            onDelete={onDeleteTask}
-            onMove={onMoveTask}
+            onUpdateTask={onUpdateTask}
+            onDeleteTask={onDeleteTask}
+            onMoveTask={onMoveTask}
             onToggleComplete={onToggleComplete}
             availableColumns={availableColumns}
           />
         ))}
-        {isAdding ? (
-          <form onSubmit={handleAddTask} className="add-task-form" aria-label="Add new task">
+      </div>
+      {showAddForm ? (
+        <form className="add-task-form" onSubmit={handleAddTask}>
+          <div className="add-task-form-main">
             <input
-              ref={inputRef}
+              className="add-task-input"
               type="text"
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
               placeholder="Enter task title..."
-              className="add-task-input"
-              aria-label="Task title"
-              maxLength={500}
-              disabled={isSubmitting}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  handleCancel()
-                }
-              }}
+              autoFocus
             />
-            <div className="add-task-actions">
-              <button 
-                type="submit" 
-                className="btn-add"
-                disabled={isSubmitting || !newTaskTitle.trim()}
-              >
-                {isSubmitting ? 'Adding...' : 'Add'}
-              </button>
-              <button 
-                type="button" 
-                className="btn-cancel"
-                onClick={handleCancel}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        ) : (
-          <button 
-            className="add-task-btn"
-            onClick={() => setIsAdding(true)}
-            aria-label={`Add task to ${column.title} column`}
-          >
-            + Add Task
-          </button>
-        )}
-      </div>
+            <input
+              type="date"
+              className="add-task-date-input"
+              value={newDeadline}
+              onChange={(e) => setNewDeadline(e.target.value)}
+            />
+          </div>
+          <div className="add-task-actions">
+            <button type="submit" className="btn-add">Add</button>
+            <button type="button" className="btn-cancel" onClick={() => setShowAddForm(false)}>Cancel</button>
+          </div>
+        </form>
+      ) : (
+        <button className="add-task-btn" onClick={() => setShowAddForm(true)}>+ Add Task</button>
+      )}
     </div>
-  )
+  );
 }
 
-Column.propTypes = columnPropTypes
+Column.propTypes = {
+  // ... your existing prop types ...
+};
 
-export default React.memo(Column)
+export default React.memo(Column);
