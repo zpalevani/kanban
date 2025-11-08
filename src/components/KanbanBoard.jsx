@@ -10,8 +10,8 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates, arrayMove } from '@dnd-kit/sortable';
 import { nanoid } from 'nanoid';
-import { useLocalStorage } from '../hooks/useLocalStorage'; // Assuming path
-import { STORAGE_KEYS } from '../utils/constants'; // Assuming path
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { STORAGE_KEYS } from '../utils/constants';
 
 import Column from './Column';
 import TaskCard from './TaskCard';
@@ -92,7 +92,7 @@ function KanbanBoard() {
       const activeIndex = activeColumn.tasks.findIndex(t => t.id === active.id);
       const overIndex = overColumn.tasks.findIndex(t => t.id === over.id);
 
-      if (activeIndex !== overIndex) {
+      if (activeIndex !== -1 && overIndex !== -1 && activeIndex !== overIndex) {
         setColumns(prev => ({
           ...prev,
           [overColumn.id]: {
@@ -141,10 +141,29 @@ function KanbanBoard() {
      });
   };
   
+  // --- UPDATED LOGIC TO MOVE TASK TO "DONE" ---
   const onToggleComplete = (taskId) => {
-    const task = findColumnOfTask(taskId)?.tasks.find(t => t.id === taskId);
-    if (task) {
-      onUpdateTask(taskId, { completed: !task.completed });
+    const activeColumn = findColumnOfTask(taskId);
+    if (!activeColumn) return;
+
+    const taskIndex = activeColumn.tasks.findIndex(t => t.id === taskId);
+    if (taskIndex === -1) return;
+
+    const task = activeColumn.tasks[taskIndex];
+    const isCompleted = !task.completed;
+
+    if (isCompleted && activeColumn.id !== 'done') {
+      // Logic to move the task to the "Done" column
+      setColumns(prev => {
+        const newColumns = { ...prev };
+        const [movedTask] = newColumns[activeColumn.id].tasks.splice(taskIndex, 1);
+        movedTask.completed = true;
+        newColumns.done.tasks.push(movedTask);
+        return newColumns;
+      });
+    } else {
+      // Default behavior: just toggle the completion state in its current column
+      onUpdateTask(taskId, { completed: isCompleted });
     }
   };
   

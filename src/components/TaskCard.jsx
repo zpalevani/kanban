@@ -14,7 +14,6 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
 
   const menuButtonRef = useRef(null);
 
-  // --- DND-KIT INTEGRATION ---
   const {
     attributes,
     listeners,
@@ -28,7 +27,6 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
     transform: CSS.Transform.toString(transform),
     transition,
   };
-  // --- END DND-KIT INTEGRATION ---
 
   const handleTitleBlur = () => {
     if (title.trim() && title.trim() !== task.title) {
@@ -49,20 +47,33 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
     onUpdateTask(task.id, { notes: noteInput });
     setIsNotesModalOpen(false);
   };
-  
-  // We wrap the entire component in a div to apply the dnd-kit props
+
   return (
     <div ref={setNodeRef} style={style} {...attributes} className={isDragging ? 'is-dragging-container' : ''}>
       <div className={`task-card ${task.completed ? 'completed' : ''}`} {...listeners}>
         <div className="task-header">
           <div className="task-content">
-            <input
-              type="checkbox"
-              className="task-checkbox-input"
-              checked={task.completed}
-              onChange={() => onToggleComplete(task.id)}
+            {/* --- UPDATED ACCESSIBLE CUSTOM CHECKBOX --- */}
+            <div
+              role="checkbox"
+              aria-checked={task.completed}
+              tabIndex="0"
+              className="custom-checkbox"
+              onClick={() => onToggleComplete(task.id)}
+              onKeyDown={(e) => {
+                if (e.key === ' ' || e.key === 'Enter') {
+                  e.preventDefault(); // Prevents page scroll on spacebar
+                  onToggleComplete(task.id);
+                }
+              }}
               aria-labelledby={`task-title-${task.id}`}
-            />
+            >
+              {task.completed && (
+                <svg className="checkmark" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                </svg>
+              )}
+            </div>
             {isEditing ? (
               <input
                 type="text"
@@ -86,7 +97,10 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
           <button
             ref={menuButtonRef}
             className="task-menu-btn"
-            onClick={() => setIsMenuOpen(true)}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent drag from starting when opening menu
+              setIsMenuOpen(true);
+            }}
             aria-label="Task options"
           >
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
