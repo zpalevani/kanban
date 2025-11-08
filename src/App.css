@@ -5,7 +5,7 @@
 
 /* 1. CSS VARIABLES FOR THEMES */
 :root {
-  /* Electric Lime Accent (for global elements like hover, focus rings) */
+  /* Electric Lime Accent (for global elements like focus rings) */
   --accent-primary: #39ff14;
   --accent-primary-hover: #4dff2b;
   --accent-primary-faded: rgba(57, 255, 20, 0.1);
@@ -66,7 +66,7 @@ body {
 
 #root { min-height: 100vh; }
 
-/* --- 4. APP LAYOUT & NEW THEME TOGGLE STYLES --- */
+/* --- 4. APP LAYOUT & THEME TOGGLE STYLES --- */
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 
 .app-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background-color: var(--bg-primary); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
@@ -75,7 +75,6 @@ body {
 .made-by { font-size: 1rem; font-weight: 500; color: var(--text-primary); opacity: 0.9; }
 .keyboard-hint { font-size: 0.75rem; color: var(--text-secondary); opacity: 0.7; }
 
-/* NEW: Styles for the theme toggle button */
 .theme-toggle {
   background: var(--bg-tertiary);
   color: var(--text-primary);
@@ -92,13 +91,12 @@ body {
   position: relative;
 }
 
+/* CORRECTED: Subtle "pop" hover effect */
 .theme-toggle:hover {
-  background: var(--accent-primary);
-  color: var(--bg-primary);
-  border-color: var(--accent-primary);
+  border-color: var(--text-secondary); /* Make border brighter */
+  transform: translateY(-1px); /* Add a slight lift effect */
 }
 
-/* NEW: Styles for the SVG icons inside the button */
 .theme-icon {
   width: 20px;
   height: 20px;
@@ -106,14 +104,8 @@ body {
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: rotate(-90deg) scale(0.5);
-  }
-  to {
-    opacity: 1;
-    transform: rotate(0deg) scale(1);
-  }
+  from { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+  to { opacity: 1; transform: rotate(0deg) scale(1); }
 }
 
 .app-main { flex: 1; padding: 2rem; overflow-x: auto; }
