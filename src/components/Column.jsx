@@ -1,10 +1,11 @@
-import React, { useState } from 'react'; // CORRECTED: Added useState import
+import React, { useState } from 'react';
 import TaskCard from './TaskCard';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import PropTypes from 'prop-types';
 
+// Define the validation schema with Zod
 const taskSchema = z.object({
   title: z.string().min(1, 'Title is required').max(50, 'Title is too long'),
   deadline: z.string().optional(),
@@ -17,7 +18,12 @@ function Column({ column, tasks, onAddTask, ...taskProps }) {
     reset,
     formState: { errors, isSubmitting, isDirty }
   } = useForm({
-    resolver: zodResolver(taskSchema)
+    resolver: zodResolver(taskSchema),
+    // CORRECTED: Set default values to prevent placeholder issues
+    defaultValues: {
+      title: "",
+      deadline: ""
+    }
   });
 
   const [showAddForm, setShowAddForm] = useState(false);
@@ -55,7 +61,7 @@ function Column({ column, tasks, onAddTask, ...taskProps }) {
               {...register('deadline')}
             />
           </div>
-          {errors.title && <p style={{color: 'red', fontSize: '0.8rem'}}>{errors.title.message}</p>}
+          {errors.title && <p className="form-error">{errors.title.message}</p>}
           <div className="add-task-actions">
             <button type="submit" className="btn-add" disabled={isSubmitting || !isDirty}>
               {isSubmitting ? 'Adding...' : 'Add'}
