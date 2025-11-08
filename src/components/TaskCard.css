@@ -1,14 +1,10 @@
-/*
-  The z-index rules have been removed as they are no longer needed.
-  The portal handles the stacking context now.
-*/
 .task-card {
   background-color: var(--bg-tertiary, #2d3748);
   border: 1px solid var(--border, #4a5568);
   border-radius: 8px;
   padding: 1rem;
   transition: transform 150ms ease, box-shadow 150ms ease;
-  position: relative;
+  position: relative; /* Needed for child element positioning */
 }
 
 .task-card:hover {
@@ -37,6 +33,8 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  /* Add a min-width to prevent content from collapsing and to better manage flex sizing */
+  min-width: 0; 
 }
 
 .task-checkbox-input {
@@ -53,6 +51,10 @@
   font-weight: 500;
   line-height: 1.4;
   cursor: pointer;
+  /* Prevent long text from pushing the button away */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .task-edit-input {
@@ -66,7 +68,16 @@
   outline: none;
 }
 
+/*
+  THIS IS THE CRITICAL FIX:
+  We make the button a "positioned" element and give it a z-index.
+  This creates a new layer, lifting it above the invisible .task-content
+  area that was blocking the clicks.
+*/
 .task-menu-btn {
+  position: relative; /* Creates a new stacking context */
+  z-index: 2;         /* Lifts the button above other elements in the card */
+  
   background: transparent;
   border: none;
   color: var(--text-secondary, #a0aec0);
@@ -77,6 +88,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .task-menu-btn:hover,
@@ -86,13 +98,8 @@
   outline: none;
 }
 
-/*
-  THIS IS THE FIX:
-  The three-dots icon is made of <circle> elements, which require a `fill`
-  property, not a `stroke` property, to be visible.
-*/
 .task-menu-btn svg {
   width: 20px;
   height: 20px;
-  fill: currentColor; /* Changed from "stroke" to "fill" */
+  fill: currentColor;
 }
