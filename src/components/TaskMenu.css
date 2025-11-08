@@ -1,71 +1,72 @@
-.task-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 0.5rem;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
+/* Using a high z-index from our new design system */
+.task-menu-portal {
+  position: fixed; /* Use fixed positioning as it's in the body */
+  z-index: var(--z-dropdown, 1000);
+  width: 220px;
+  background-color: var(--bg-tertiary, #2d3748);
+  border: 1px solid var(--border, #4a5568);
   border-radius: 8px;
-  box-shadow: 0 4px 12px var(--shadow);
-  min-width: 180px;
-  z-index: 10;
-  overflow: hidden;
+  box-shadow: 0 8px 24px var(--shadow, rgba(0, 0, 0, 0.4));
+  padding: 0.5rem;
+  animation: fadeIn 150ms ease-out;
 }
 
-.menu-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9;
-}
-
-.menu-item {
-  display: block;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: transparent;
-  border: none;
-  text-align: left;
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.menu-item:hover,
-.menu-item:focus {
-  background-color: var(--bg-tertiary);
-  outline: none;
-}
-
-.menu-item.delete {
-  color: #ff4444;
-}
-
-.menu-item.delete:hover,
-.menu-item.delete:focus {
-  background-color: rgba(255, 68, 68, 0.1);
-}
-
-.menu-divider {
-  height: 1px;
-  background-color: var(--border);
-  margin: 0.25rem 0;
-}
-
-.menu-section {
+.task-menu-portal .menu-item {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  background: none;
+  border: none;
+  color: var(--text-primary, #e2e8f0);
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 150ms ease;
 }
 
-.menu-label {
-  padding: 0.5rem 1rem;
+.task-menu-portal .menu-item:hover {
+  background-color: var(--bg-primary, #4a5568);
+}
+
+.task-menu-portal .menu-item.delete:hover {
+  background-color: rgba(229, 62, 62, 0.2);
+  color: #f56565;
+}
+
+.task-menu-portal .menu-item svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  flex-shrink: 0;
+}
+
+.task-menu-portal .menu-divider {
+  height: 1px;
+  background-color: var(--border, #4a5568);
+  margin: 0.5rem 0;
+}
+
+.task-menu-portal .menu-label {
   font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary, #a0aec0);
+  padding: 0.5rem 0.75rem;
+  margin: 0;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
