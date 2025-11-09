@@ -11,11 +11,11 @@ import {
 import { sortableKeyboardCoordinates, arrayMove } from '@dnd-kit/sortable';
 import { nanoid } from 'nanoid';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { STORAGE_KEYS, PRIORITIES } from '../utils/constants';
+import { STORAGE_KEYS, PRIORITIES, COLUMNS } from '../utils/constants';
 
 import Column from './Column';
 import TaskCard from './TaskCard';
-
+import './KanbanBoard.css';
 const initialColumns = {
   backlog: { id: 'backlog', title: 'Backlog', tasks: [] },
   todo: { id: 'todo', title: 'To Do', tasks: [] },
@@ -271,19 +271,23 @@ function KanbanBoard() {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        {Object.values(filteredColumns).map(column => (
-          <Column
-            key={column.id}
-            column={column}
-            tasks={column.tasks}
-            onAddTask={onAddTask}
-            onUpdateTask={onUpdateTask}
-            onDeleteTask={onDeleteTask}
-            onMoveTask={onMoveTask}
-            onToggleComplete={onToggleComplete}
-            availableColumns={availableColumnsList.filter(c => c.id !== column.id)}
-          />
-        ))}
+        {COLUMNS.map(colDef => {
+          const column = filteredColumns[colDef.id];
+          if (!column) return null;
+          return (
+            <Column
+              key={column.id}
+              column={column}
+              tasks={column.tasks}
+              onAddTask={onAddTask}
+              onUpdateTask={onUpdateTask}
+              onDeleteTask={onDeleteTask}
+              onMoveTask={onMoveTask}
+              onToggleComplete={onToggleComplete}
+              availableColumns={availableColumnsList.filter(c => c.id !== column.id)}
+            />
+          );
+        })}
         <DragOverlay>
           {activeTask ? (
             <TaskCard 
@@ -302,5 +306,4 @@ function KanbanBoard() {
     </div>
   );
 }
-
 export default React.memo(KanbanBoard);
