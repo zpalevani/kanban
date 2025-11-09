@@ -131,7 +131,7 @@ function TaskCard({ task, columnId, onUpdateTask, onDeleteTask, onMoveTask, onTo
         </div>
         {/* Priority and Deadline Indicators */}
         <div className="task-meta">
-          {task.priority && task.priority !== PRIORITIES.MEDIUM && (
+          {task.priority && (
             <span 
               className="task-priority"
               style={{ '--priority-color': priorityInfo.color }}

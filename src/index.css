@@ -74,7 +74,7 @@ body {
 
 
 /* 5. KANBAN BOARD & COLUMNS */
-.kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; max-width: 1800px; margin: 0 auto; }
+.kanban-board { display: flex; flex-direction: column; gap: 1.5rem; max-width: 1800px; margin: 0 auto; }
 .kanban-column { background-color: var(--bg-secondary); border-radius: 12px; display: flex; flex-direction: column; max-height: calc(100vh - 150px); border: 1px solid var(--border); }
 .column-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-radius: 11px 11px 0 0; color: var(--brand-white); }
 .column-title { font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
@@ -176,5 +176,4 @@ body {
 .toast { /* ... existing styles ... */ }
 
 /* 10. RESPONSIVE DESIGN (Styles unchanged) */
-@media (max-width: 1200px) { .kanban-board { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 768px) { .kanban-board { grid-template-columns: 1fr; } .app-main { padding: 1rem; } .app-header { padding: 1rem; } .kanban-actions { flex-direction: column; } .keyboard-hint { display: none; } }
+@media (max-width: 768px) { .app-main { padding: 1rem; } .app-header { padding: 1rem; } .keyboard-hint { display: none; } }

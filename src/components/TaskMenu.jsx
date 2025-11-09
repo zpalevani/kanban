@@ -25,6 +25,17 @@ export function TaskMenu({
     setMountNode(document.body);
   }, []);
 
+  // Position the menu near the button
+  useEffect(() => {
+    if (mountNode && menuRef.current && dropdownRef.current) {
+      const buttonRect = menuRef.current.getBoundingClientRect();
+      const menu = dropdownRef.current;
+      
+      menu.style.top = `${buttonRect.bottom + 8}px`;
+      menu.style.left = `${buttonRect.left}px`;
+    }
+  }, [mountNode, menuRef]);
+
   useClickOutside(dropdownRef, (event) => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
       onClose();
