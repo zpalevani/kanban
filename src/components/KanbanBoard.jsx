@@ -231,10 +231,7 @@ function KanbanBoard() {
       {/* Search and Filter Bar */}
       <div className="kanban-controls">
         <div className="search-container">
-          <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
-          </svg>
+         
           <input
             type="text"
             className="search-input"
