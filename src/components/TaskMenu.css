@@ -1,7 +1,7 @@
 /* Using a high z-index from our new design system */
 .task-menu-portal {
-  position: fixed; /* Use fixed positioning as it's in the body */
-  z-index: 9999;
+  position: fixed !important; /* Use fixed positioning as it's in the body */
+  z-index: 99999 !important; /* Very high z-index */
   min-width: 240px;
   background-color: var(--bg-tertiary, #2d3748);
   border: 2px solid var(--border, #4a5568);
@@ -10,8 +10,9 @@
   padding: 0.5rem;
   animation: fadeIn 150ms ease-out;
   backdrop-filter: blur(10px);
-  top: 0;
-  left: 0;
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
 }
 
 .task-menu-portal .menu-item {

@@ -17,7 +17,6 @@ export function TaskMenu({
   availableColumns,
 }) {
   const dropdownRef = useRef(null);
-  // State to hold the portal container element
   const [mountNode, setMountNode] = useState(null);
 
   // This ensures we only access document.body on the client-side
@@ -27,34 +26,75 @@ export function TaskMenu({
 
   // Position the menu near the button
   useEffect(() => {
-    if (mountNode && menuRef.current && dropdownRef.current) {
-      const buttonRect = menuRef.current.getBoundingClientRect();
-      const menu = dropdownRef.current;
+    if (!mountNode) return;
+    
+    const updatePosition = () => {
+      if (!menuRef?.current || !dropdownRef.current) return;
       
-      menu.style.top = `${buttonRect.bottom + 8}px`;
-      menu.style.left = `${buttonRect.left}px`;
-    }
+      try {
+        const buttonRect = menuRef.current.getBoundingClientRect();
+        const menu = dropdownRef.current;
+        
+        if (buttonRect && menu) {
+          // For fixed positioning, use viewport coordinates directly
+          menu.style.position = 'fixed';
+          menu.style.top = `${buttonRect.bottom + 8}px`;
+          menu.style.left = `${buttonRect.left}px`;
+          menu.style.visibility = 'visible';
+          menu.style.opacity = '1';
+          menu.style.display = 'block';
+          menu.style.zIndex = '99999';
+        }
+      } catch (error) {
+        console.error('Error positioning menu:', error);
+      }
+    };
+    
+    // Multiple attempts to ensure positioning works
+    updatePosition();
+    const timer1 = setTimeout(updatePosition, 10);
+    const timer2 = setTimeout(updatePosition, 50);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
   }, [mountNode, menuRef]);
 
+  // Close menu when clicking outside
   useClickOutside(dropdownRef, (event) => {
-    if (menuRef.current && !menuRef.current.contains(event.target)) {
+    if (menuRef?.current && !menuRef.current.contains(event.target)) {
       onClose();
     }
   });
 
   const handleAction = (action) => {
-    action();
+    if (action) {
+      action();
+    }
     onClose();
   };
-  
+
   const menuContent = (
-    <div className="task-menu-portal" ref={dropdownRef}>
-      <button className="menu-item delete" onClick={() => handleAction(onDelete)}>
+    <div 
+      className="task-menu-portal" 
+      ref={dropdownRef}
+      style={{
+        position: 'fixed',
+        zIndex: 99999,
+        visibility: 'visible',
+        opacity: 1,
+        display: 'block'
+      }}
+    >
+      <button className="menu-item" onClick={() => handleAction(onOpenNotes)}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
         </svg>
-        <span>Delete</span>
+        <span>Add Notes</span>
       </button>
       <div className="menu-divider"></div>
       <p className="menu-label">Move to:</p>
@@ -68,27 +108,44 @@ export function TaskMenu({
         </button>
       ))}
       <div className="menu-divider"></div>
-      <button className="menu-item" onClick={() => handleAction(onEdit)}>
+      <p className="menu-label">Priority:</p>
+      {Object.values(PRIORITIES).map(priority => (
+        <button
+          key={priority}
+          className={`menu-item ${currentPriority === priority ? 'active' : ''}`}
+          onClick={() => handleAction(() => onUpdatePriority && onUpdatePriority(priority))}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            {currentPriority === priority ? (
+              <>
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </>
+            ) : (
+              <circle cx="12" cy="12" r="10"></circle>
+            )}
+          </svg>
+          <span>{PRIORITY_LABELS[priority]}</span>
+        </button>
+      ))}
+      <div className="menu-divider"></div>
+      <button className="menu-item delete" onClick={() => handleAction(onDelete)}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 20h9"></path>
-          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
         </svg>
-        <span>Edit</span>
-      </button>
-      <button className="menu-item" onClick={() => handleAction(onOpenNotes)}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-          <line x1="16" y1="13" x2="8" y2="13"></line>
-          <line x1="16" y1="17" x2="8" y2="17"></line>
-        </svg>
-        <span>Add Notes</span>
+        <span>Delete</span>
       </button>
     </div>
   );
   
-  // Only render the portal if the mountNode is available (i.e., we are in the browser)
-  return mountNode ? createPortal(menuContent, mountNode) : null;
+  if (!mountNode) {
+    console.log('TaskMenu: No mountNode, returning null');
+    return null;
+  }
+  
+  console.log('TaskMenu: Rendering portal with menuContent');
+  return createPortal(menuContent, mountNode);
 }
 
 TaskMenu.propTypes = {
@@ -102,3 +159,4 @@ TaskMenu.propTypes = {
   currentPriority: PropTypes.string,
   availableColumns: PropTypes.array.isRequired,
 };
+

@@ -231,8 +231,7 @@ function KanbanBoard() {
       {/* Search and Filter Bar */}
       <div className="kanban-controls">
         <div className="search-container">
-         
-          <input
+         <input
             type="text"
             className="search-input"
             placeholder="Search tasks..."

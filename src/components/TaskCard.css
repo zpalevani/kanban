@@ -63,6 +63,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+  z-index: 1;
   gap: 0.75rem;
 }
 
@@ -113,8 +115,9 @@
   area that was blocking the clicks.
 */
 .task-menu-btn {
-  position: relative; /* Creates a new stacking context */
-  z-index: 2;         /* Lifts the button above other elements in the card */
+  position: relative;
+  z-index: 100;  /* Much higher z-index to be above everything */
+  pointer-events: auto !important;  /* Force clicks to work */
   
   background: transparent;
   border: none;
@@ -205,4 +208,18 @@
   background-color: rgba(255, 149, 0, 0.1);
   color: #FF9500;
   border-color: rgba(255, 149, 0, 0.2);
+}
+
+/* Ensure checkbox is clickable */
+.custom-checkbox {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto !important;
+  cursor: pointer;
+  min-width: 20px;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }

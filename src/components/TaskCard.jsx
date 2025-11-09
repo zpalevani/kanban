@@ -23,7 +23,12 @@ function TaskCard({ task, columnId, onUpdateTask, onDeleteTask, onMoveTask, onTo
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: task.id });
+  } = useSortable({ 
+    id: task.id,
+    activationConstraint: {
+      distance: 8, // Only activate drag after 8px of movement
+    }
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -73,7 +78,40 @@ function TaskCard({ task, columnId, onUpdateTask, onDeleteTask, onMoveTask, onTo
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} className={isDragging ? 'is-dragging-container' : ''}>
-      <div className={`task-card ${task.completed ? 'completed' : ''} column-${columnId}`} {...listeners}>
+      <div 
+        className={`task-card ${task.completed ? 'completed' : ''} column-${columnId}`}
+        onMouseDown={(e) => {
+          // Don't start drag if clicking on interactive elements
+          const target = e.target;
+          const isInteractive = target.closest('.custom-checkbox') || 
+                                target.closest('.task-menu-btn') || 
+                                target.closest('.task-title') ||
+                                target.closest('.task-edit-input') ||
+                                target.closest('button') ||
+                                target.closest('input');
+          
+          if (!isInteractive) {
+            // Apply drag listeners manually
+            if (listeners?.onMouseDown) {
+              listeners.onMouseDown(e);
+            }
+          }
+        }}
+        onTouchStart={(e) => {
+          // Same for touch
+          const target = e.target;
+          const isInteractive = target.closest('.custom-checkbox') || 
+                                target.closest('.task-menu-btn') || 
+                                target.closest('.task-title') ||
+                                target.closest('.task-edit-input') ||
+                                target.closest('button') ||
+                                target.closest('input');
+          
+          if (!isInteractive && listeners?.onTouchStart) {
+            listeners.onTouchStart(e);
+          }
+        }}
+      >
         <div className="task-header">
           <div className="task-content">
             {/* --- UPDATED ACCESSIBLE CUSTOM CHECKBOX --- */}
@@ -82,10 +120,24 @@ function TaskCard({ task, columnId, onUpdateTask, onDeleteTask, onMoveTask, onTo
               aria-checked={task.completed}
               tabIndex="0"
               className="custom-checkbox"
-              onClick={() => onToggleComplete(task.id)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Checkbox clicked, toggling task:', task.id);
+                onToggleComplete(task.id);
+              }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onTouchStart={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
               onKeyDown={(e) => {
                 if (e.key === ' ' || e.key === 'Enter') {
-                  e.preventDefault(); // Prevents page scroll on spacebar
+                  e.preventDefault();
+                  e.stopPropagation();
                   onToggleComplete(task.id);
                 }
               }}
@@ -104,6 +156,8 @@ function TaskCard({ task, columnId, onUpdateTask, onDeleteTask, onMoveTask, onTo
                 onChange={(e) => setTitle(e.target.value)}
                 onBlur={handleTitleBlur}
                 onKeyDown={handleTitleKeyDown}
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
                 className="task-edit-input"
                 autoFocus
               />
@@ -111,7 +165,11 @@ function TaskCard({ task, columnId, onUpdateTask, onDeleteTask, onMoveTask, onTo
               <p
                 id={`task-title-${task.id}`}
                 className="task-title"
-                onClick={() => setIsEditing(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsEditing(true);
+                }}
+                onMouseDown={(e) => e.stopPropagation()}
               >
                 {task.title}
               </p>
@@ -121,10 +179,21 @@ function TaskCard({ task, columnId, onUpdateTask, onDeleteTask, onMoveTask, onTo
             ref={menuButtonRef}
             className="task-menu-btn"
             onClick={(e) => {
-              e.stopPropagation(); // Prevent drag from starting when opening menu
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('Menu button clicked, opening menu');
               setIsMenuOpen(true);
             }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
             aria-label="Task options"
+            type="button"
           >
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
           </button>
