@@ -120,13 +120,15 @@
   border: none;
   color: var(--text-secondary, #a0aec0);
   cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 4px;
-  transition: background-color 150ms ease, color 150ms ease;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  min-width: 32px;
+  min-height: 32px;
 }
 
 .task-menu-btn:hover,
@@ -134,12 +136,18 @@
   background-color: var(--bg-primary, #4a5568);
   color: var(--text-primary, #e2e8f0);
   outline: none;
+  transform: scale(1.1);
+}
+
+.task-menu-btn:active {
+  transform: scale(0.95);
 }
 
 .task-menu-btn svg {
   width: 20px;
   height: 20px;
   fill: currentColor;
+  pointer-events: none;
 }
 
 .task-meta {

@@ -38,41 +38,13 @@ export function TaskMenu({
   
   const menuContent = (
     <div className="task-menu-portal" ref={dropdownRef}>
-      <button className="menu-item" onClick={() => handleAction(onOpenNotes)}>
+      <button className="menu-item delete" onClick={() => handleAction(onDelete)}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
         </svg>
-        <span>Edit Notes</span>
+        <span>Delete</span>
       </button>
-      <button className="menu-item" onClick={() => handleAction(onEdit)}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 20h9"></path>
-          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-        </svg>
-        <span>Edit Task Header</span>
-      </button>
-      <div className="menu-divider"></div>
-      <p className="menu-label">Priority:</p>
-      {Object.values(PRIORITIES).map(priority => (
-        <button
-          key={priority}
-          className={`menu-item ${currentPriority === priority ? 'active' : ''}`}
-          onClick={() => handleAction(() => onUpdatePriority(priority))}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            {currentPriority === priority ? (
-              <>
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </>
-            ) : (
-              <circle cx="12" cy="12" r="10"></circle>
-            )}
-          </svg>
-          <span>{PRIORITY_LABELS[priority]}</span>
-        </button>
-      ))}
       <div className="menu-divider"></div>
       <p className="menu-label">Move to:</p>
       {availableColumns.map(col => (
@@ -85,12 +57,21 @@ export function TaskMenu({
         </button>
       ))}
       <div className="menu-divider"></div>
-      <button className="menu-item delete" onClick={() => handleAction(onDelete)}>
+      <button className="menu-item" onClick={() => handleAction(onEdit)}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
         </svg>
-        <span>Delete Task</span>
+        <span>Edit</span>
+      </button>
+      <button className="menu-item" onClick={() => handleAction(onOpenNotes)}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span>Add Notes</span>
       </button>
     </div>
   );
