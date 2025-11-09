@@ -1,11 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { TaskMenu } from './TaskMenu'; // Ensure this path is correct
+import { TaskMenu } from './TaskMenu';
+import { PRIORITIES, PRIORITY_LABELS, PRIORITY_COLORS } from '../utils/constants';
+import { format, isPast, isToday, differenceInDays } from 'date-fns';
 import './TaskCard.css';
 
-function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComplete, availableColumns }) {
+function TaskCard({ task, columnId, onUpdateTask, onDeleteTask, onMoveTask, onToggleComplete, availableColumns }) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -48,9 +50,30 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
     setIsNotesModalOpen(false);
   };
 
+  const priorityInfo = useMemo(() => ({
+    label: PRIORITY_LABELS[task.priority || PRIORITIES.MEDIUM],
+    color: PRIORITY_COLORS[task.priority || PRIORITIES.MEDIUM]
+  }), [task.priority]);
+
+  const deadlineInfo = useMemo(() => {
+    if (!task.deadline) return null;
+    const deadline = new Date(task.deadline);
+    const now = new Date();
+    const daysDiff = differenceInDays(deadline, now);
+    
+    return {
+      date: deadline,
+      formatted: format(deadline, 'MMM d'),
+      isOverdue: isPast(deadline) && !isToday(deadline),
+      isToday: isToday(deadline),
+      isSoon: daysDiff > 0 && daysDiff <= 3,
+      daysLeft: daysDiff
+    };
+  }, [task.deadline]);
+
   return (
     <div ref={setNodeRef} style={style} {...attributes} className={isDragging ? 'is-dragging-container' : ''}>
-      <div className={`task-card ${task.completed ? 'completed' : ''}`} {...listeners}>
+      <div className={`task-card ${task.completed ? 'completed' : ''} column-${columnId}`} {...listeners}>
         <div className="task-header">
           <div className="task-content">
             {/* --- UPDATED ACCESSIBLE CUSTOM CHECKBOX --- */}
@@ -106,6 +129,28 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
           </button>
         </div>
+        {/* Priority and Deadline Indicators */}
+        <div className="task-meta">
+          {task.priority && task.priority !== PRIORITIES.MEDIUM && (
+            <span 
+              className="task-priority"
+              style={{ '--priority-color': priorityInfo.color }}
+            >
+              {priorityInfo.label}
+            </span>
+          )}
+          {deadlineInfo && (
+            <span 
+              className={`task-deadline ${deadlineInfo.isOverdue ? 'overdue' : deadlineInfo.isToday ? 'today' : deadlineInfo.isSoon ? 'soon' : ''}`}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              {deadlineInfo.formatted}
+            </span>
+          )}
+        </div>
       </div>
 
       {isMenuOpen && (
@@ -119,6 +164,8 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
             onMoveTask(task.id, newColumnId);
             setIsMenuOpen(false);
           }}
+          onUpdatePriority={(priority) => onUpdateTask(task.id, { priority })}
+          currentPriority={task.priority || PRIORITIES.MEDIUM}
           availableColumns={availableColumns}
         />
       )}
@@ -150,6 +197,7 @@ function TaskCard({ task, onUpdateTask, onDeleteTask, onMoveTask, onToggleComple
 
 TaskCard.propTypes = {
   task: PropTypes.object.isRequired,
+  columnId: PropTypes.string.isRequired,
   onUpdateTask: PropTypes.func.isRequired,
   onDeleteTask: PropTypes.func.isRequired,
   onMoveTask: PropTypes.func.isRequired,

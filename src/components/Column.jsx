@@ -52,6 +52,7 @@ function Column({ column, tasks, onAddTask, onUpdateTask, onDeleteTask, onMoveTa
             <TaskCard
               key={task.id}
               task={task}
+              columnId={column.id}
               onUpdateTask={onUpdateTask}
               onDeleteTask={onDeleteTask}
               onMoveTask={onMoveTask}
@@ -103,4 +104,12 @@ Column.propTypes = {
   availableColumns: PropTypes.array.isRequired,
 };
 
-export default React.memo(Column);
+export default React.memo(Column, (prevProps, nextProps) => {
+  return (
+    prevProps.column.id === nextProps.column.id &&
+    prevProps.column.title === nextProps.column.title &&
+    prevProps.tasks.length === nextProps.tasks.length &&
+    prevProps.tasks.every((task, idx) => task.id === nextProps.tasks[idx]?.id) &&
+    prevProps.availableColumns.length === nextProps.availableColumns.length
+  );
+});

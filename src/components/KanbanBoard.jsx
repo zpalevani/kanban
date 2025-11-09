@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   DndContext,
   closestCorners,
@@ -11,7 +11,7 @@ import {
 import { sortableKeyboardCoordinates, arrayMove } from '@dnd-kit/sortable';
 import { nanoid } from 'nanoid';
 import { useLocalStorage } from '../hooks/useLocalStorage';
-import { STORAGE_KEYS } from '../utils/constants';
+import { STORAGE_KEYS, PRIORITIES } from '../utils/constants';
 
 import Column from './Column';
 import TaskCard from './TaskCard';
@@ -26,6 +26,8 @@ const initialColumns = {
 function KanbanBoard() {
   const [columns, setColumns] = useLocalStorage(STORAGE_KEYS.KANBAN_COLUMNS, initialColumns);
   const [activeTask, setActiveTask] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -34,9 +36,9 @@ function KanbanBoard() {
     })
   );
 
-  const findColumnOfTask = (taskId) => {
+  const findColumnOfTask = useCallback((taskId) => {
     return Object.values(columns).find(column => column.tasks.some(task => task.id === taskId));
-  };
+  }, [columns]);
   
   const handleDragStart = (event) => {
     const { active } = event;
@@ -106,8 +108,16 @@ function KanbanBoard() {
     setActiveTask(null);
   };
   
-  const onAddTask = (columnId, title, deadline) => {
-    const newTask = { id: nanoid(), title, deadline: deadline || null, completed: false, notes: '' };
+  const onAddTask = useCallback((columnId, title, deadline) => {
+    const newTask = { 
+      id: nanoid(), 
+      title, 
+      deadline: deadline || null, 
+      completed: false, 
+      notes: '',
+      priority: PRIORITIES.MEDIUM,
+      createdAt: new Date().toISOString()
+    };
     setColumns(prev => ({
       ...prev,
       [columnId]: {
@@ -115,9 +125,9 @@ function KanbanBoard() {
         tasks: [...prev[columnId].tasks, newTask]
       }
     }));
-  };
+  }, [setColumns]);
   
-  const onUpdateTask = (taskId, newValues) => {
+  const onUpdateTask = useCallback((taskId, newValues) => {
     setColumns(prev => {
       const newColumns = { ...prev };
       for (const columnId in newColumns) {
@@ -129,9 +139,9 @@ function KanbanBoard() {
       }
       return newColumns;
     });
-  };
+  }, [setColumns]);
 
-  const onDeleteTask = (taskId) => {
+  const onDeleteTask = useCallback((taskId) => {
      setColumns(prev => {
       const newColumns = { ...prev };
        for (const columnId in newColumns) {
@@ -139,7 +149,7 @@ function KanbanBoard() {
        }
        return newColumns;
      });
-  };
+  }, [setColumns]);
   
   // --- UPDATED LOGIC TO MOVE TASK TO "DONE" ---
   const onToggleComplete = (taskId) => {
@@ -167,31 +177,104 @@ function KanbanBoard() {
     }
   };
   
-  const onMoveTask = (taskId, newColumnId) => {
-    const activeColumn = findColumnOfTask(taskId);
-    if (activeColumn && activeColumn.id !== newColumnId) {
-      const taskIndex = activeColumn.tasks.findIndex(t => t.id === taskId);
-      const [taskToMove] = activeColumn.tasks.splice(taskIndex, 1);
+  const onMoveTask = useCallback((taskId, newColumnId) => {
+    setColumns(prev => {
+      const activeColumn = Object.values(prev).find(col => col.tasks.some(t => t.id === taskId));
+      if (!activeColumn || activeColumn.id === newColumnId) return prev;
       
-      setColumns(prev => {
-        const newCols = {...prev};
-        newCols[activeColumn.id].tasks = [...activeColumn.tasks];
-        newCols[newColumnId].tasks.push(taskToMove);
-        return newCols;
-      });
+      const taskIndex = activeColumn.tasks.findIndex(t => t.id === taskId);
+      if (taskIndex === -1) return prev;
+      
+      const [taskToMove] = activeColumn.tasks.splice(taskIndex, 1);
+      const newCols = {...prev};
+      newCols[activeColumn.id] = {
+        ...activeColumn,
+        tasks: [...activeColumn.tasks]
+      };
+      newCols[newColumnId] = {
+        ...newCols[newColumnId],
+        tasks: [...newCols[newColumnId].tasks, taskToMove]
+      };
+      return newCols;
+    });
+  }, [setColumns]);
+
+  // Filter tasks based on search and priority
+  const filteredColumns = useMemo(() => {
+    if (!searchQuery && !priorityFilter) {
+      return columns;
     }
-  };
+    
+    const filtered = {};
+    Object.keys(columns).forEach(columnId => {
+      filtered[columnId] = {
+        ...columns[columnId],
+        tasks: columns[columnId].tasks.filter(task => {
+          const matchesSearch = !searchQuery || 
+            task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (task.notes && task.notes.toLowerCase().includes(searchQuery.toLowerCase()));
+          const matchesPriority = !priorityFilter || task.priority === priorityFilter;
+          return matchesSearch && matchesPriority;
+        })
+      };
+    });
+    return filtered;
+  }, [columns, searchQuery, priorityFilter]);
+
+  const availableColumnsList = useMemo(() => 
+    Object.values(columns).map(c => ({ id: c.id, title: c.title })),
+    [columns]
+  );
 
   return (
     <div className="kanban-board">
-      <DndContext
+      {/* Search and Filter Bar */}
+      <div className="kanban-controls">
+        <div className="search-container">
+          <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search tasks..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button 
+              className="search-clear"
+              onClick={() => setSearchQuery('')}
+              aria-label="Clear search"
+            >
+              ×
+            </button>
+          )}
+        </div>
+        <div className="priority-filter">
+          <select
+            className="priority-select"
+            value={priorityFilter || ''}
+            onChange={(e) => setPriorityFilter(e.target.value || null)}
+          >
+            <option value="">All Priorities</option>
+            <option value={PRIORITIES.URGENT}>Urgent</option>
+            <option value={PRIORITIES.HIGH}>High</option>
+            <option value={PRIORITIES.MEDIUM}>Medium</option>
+            <option value={PRIORITIES.LOW}>Low</option>
+          </select>
+        </div>
+      </div>
+      <div className="kanban-board-grid">
+        <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        {Object.values(columns).map(column => (
+        {Object.values(filteredColumns).map(column => (
           <Column
             key={column.id}
             column={column}
@@ -201,13 +284,14 @@ function KanbanBoard() {
             onDeleteTask={onDeleteTask}
             onMoveTask={onMoveTask}
             onToggleComplete={onToggleComplete}
-            availableColumns={Object.values(columns).filter(c => c.id !== column.id).map(c => ({ id: c.id, title: c.title }))}
+            availableColumns={availableColumnsList.filter(c => c.id !== column.id)}
           />
         ))}
         <DragOverlay>
           {activeTask ? (
             <TaskCard 
-              task={activeTask} 
+              task={activeTask}
+              columnId={findColumnOfTask(activeTask.id)?.id || 'backlog'}
               onUpdateTask={() => {}}
               onDeleteTask={() => {}}
               onMoveTask={() => {}}
@@ -217,8 +301,9 @@ function KanbanBoard() {
           ) : null}
         </DragOverlay>
       </DndContext>
+      </div>
     </div>
   );
 }
 
-export default KanbanBoard;
+export default React.memo(KanbanBoard);

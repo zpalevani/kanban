@@ -20,6 +20,16 @@ function App() {
       key: 't',
       ctrl: true,
       handler: () => setDarkMode(prev => !prev)
+    },
+    {
+      key: '/',
+      handler: (e) => {
+        const searchInput = document.querySelector('.search-input');
+        if (searchInput && document.activeElement !== searchInput) {
+          e.preventDefault();
+          searchInput.focus();
+        }
+      }
     }
   ])
 
