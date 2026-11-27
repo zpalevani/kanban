@@ -19,8 +19,8 @@ A modern, responsive Kanban board built with React and Vite. Features a beautifu
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
-- npm or yarn
+- Node.js 20.19+ (20.x) or 22.12+ (22.x or newer), required by the installed Vite version
+- npm (the repository includes `package-lock.json`)
 
 ### Installation
 
@@ -135,7 +135,6 @@ Run tests with `npm test` or view coverage with `npm run test:coverage`.
 
 - ✅ **Error Boundaries** - Prevents app crashes
 - ✅ **PropTypes** - Runtime type validation
-- ✅ **ESLint** - Code linting
 - ✅ **Accessibility** - WCAG compliant
 - ✅ **Performance** - Memoized components and callbacks
 - ✅ **Security** - Input sanitization and XSS prevention
